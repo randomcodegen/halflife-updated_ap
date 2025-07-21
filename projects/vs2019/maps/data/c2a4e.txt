@@ -1,0 +1,7 @@
+info_player_start "" 664.0 -288.0 184.0
+info_landmark "lm1" 1344.0 -32.0 80.0
+info_landmark "lm2" -368.0 1888.0 272.0
+info_landmark "lm4" -1536.0 2112.0 192.0
+info_landmark "c2a4e-c2a4g" 0.0 -1128.0 208.0
+info_player_start "" -2768.0 784.0 48.0
+info_player_start "" -432.0 608.0 304.0

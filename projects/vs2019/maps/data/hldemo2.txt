@@ -1,0 +1,7 @@
+info_landmark "hldemo2_3" 2272.0 2296.0 -64.0
+info_landmark "hldemo2_3b" 2588.0 28.0 -376.0
+info_landmark "hldemo1to2" -576.0 -248.0 168.0
+info_player_start "" -488.0 -160.0 220.0
+info_player_start "" -340.0 290.0 220.0
+info_player_start "" 2296.0 40.0 -24.0
+info_player_start "" 2808.0 96.0 -16.0

@@ -1,0 +1,6 @@
+info_landmark "vents" 508.0 -1518.0 200.0
+info_landmark "ab" 1738.0 -590.0 198.0
+info_player_start "" 1750.0 -610.0 136.0
+info_landmark "c1a2_to_c1a3" -320.0 -1568.0 1212.0
+info_player_start "" 1120.0 -888.0 -39.0
+info_landmark "freezer" -768.0 -1656.0 116.0

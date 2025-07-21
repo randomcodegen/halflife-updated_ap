@@ -1,0 +1,4 @@
+info_landmark "c2a5g/c3a1" 2624.0 2501.0 -1881.0
+info_player_start "" 992.0 -2496.0 -1760.0
+info_landmark "c2a5ftog" 1138.0 -2320.0 -1716.0
+info_player_start "" 1053.0 1482.0 -1321.0

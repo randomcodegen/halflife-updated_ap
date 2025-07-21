@@ -47,8 +47,6 @@
 
 #include "filesystem_utils.h"
 
-// [ap]
-#include "archipelago/ap_integration.h"
 
 static CSysModule* g_pFileSystemModule = nullptr;
 
@@ -145,7 +143,7 @@ bool FileSystem_LoadFileSystem()
 
 	// [ap] Init console for printing here
 	InitializeConsole();
-
+	
 	assert(nullptr != g_pFileSystemModule);
 
 	if (nullptr == g_pFileSystemModule)

@@ -1,0 +1,4 @@
+info_player_start "" 0.0 -875.0 70.0
+info_landmark "c0a0toa" -2345.0 -1476.0 175.0
+info_landmark "c0a0toa" -2345.0 -1477.0 170.0
+info_landmark "c0a0tob" 1575.0 -3587.0 175.0

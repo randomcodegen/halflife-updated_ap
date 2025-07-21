@@ -18,19 +18,6 @@ struct NotifyLine
 	float timeAdded;
 };
 
-class CHudAPText : public CHudBase
-{
-public:
-	bool Init(void);
-	bool VidInit(void);
-	void Reset();
-	bool Draw(float time);
-	void DrawCustomCrosshair();
-
-private:
-	HLSPRITE m_hSprite;
-};
-
 class CHudMultiNotify : public CHudBase
 {
 public:
@@ -55,3 +42,22 @@ public:
 	bool Draw(float flTime) override;
 };
 
+class CHudAPText : public CHudBase
+{
+public:
+	bool Init();
+	bool VidInit();
+	bool Draw(float flTime);
+	void Reset();
+
+	bool InitImGui();
+	void ToggleMenu();
+	bool IsMenuOpen() const;
+	void DrawCustomCrosshair();
+	int HookedSwapBuffers(void* hdc);
+	void RenderMenu();
+
+private:
+	HLSPRITE m_hSprite;
+};
+extern CHudAPText g_APHud;

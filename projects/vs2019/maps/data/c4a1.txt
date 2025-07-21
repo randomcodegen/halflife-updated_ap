@@ -1,0 +1,5 @@
+info_player_start "" 100.0 1940.0 1704.0
+info_player_start "" -968.0 -200.0 -56.0
+info_landmark "c4a2" -392.0 184.0 0.0
+info_landmark "c3a2_c4a1" 0.0 2496.0 1728.0
+info_landmark "tele" 96.0 1936.0 1680.0

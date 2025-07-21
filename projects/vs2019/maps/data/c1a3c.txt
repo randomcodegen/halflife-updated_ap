@@ -1,0 +1,3 @@
+info_landmark "lm_c1a3_c0" -1832.0 -1032.0 -328.0
+info_landmark "lm_c1a3_bc" -968.0 -1608.0 336.0
+info_player_start "" -928.0 -1536.0 192.0

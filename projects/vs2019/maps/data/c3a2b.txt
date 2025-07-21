@@ -1,0 +1,5 @@
+info_player_start "" -916.0 -32.0 -356.0
+info_landmark "c3a2_ab" -856.0 0.0 -504.0
+info_landmark "c3a2_bc" 528.0 880.0 648.0
+info_landmark "c3a2_cb" -512.0 640.0 132.0
+info_landmark "c3a2_bc2" -400.0 640.0 132.0

@@ -1,0 +1,9 @@
+info_landmark "c1a4atod" -2649.0 -874.0 -1022.0
+info_landmark "c1a4btoi3" -1184.0 -1180.0 -1108.0
+info_landmark "c1a4btoi5" -425.0 -584.0 -1316.0
+info_landmark "c1a4btoi1" -65.0 -1100.0 -920.0
+info_player_start "" -640.0 -3296.0 -924.0
+info_landmark "c1a4btoc" -172.0 874.0 -1132.0
+info_landmark "c1a4k_to_c1a4b" -636.0 -3563.0 -1138.0
+info_player_start "" -1984.0 -1308.0 -1156.0
+info_landmark "c1a4atod" -2649.0 -874.0 -1022.0

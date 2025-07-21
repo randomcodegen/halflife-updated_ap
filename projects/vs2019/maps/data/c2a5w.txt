@@ -1,0 +1,4 @@
+info_player_start "" -768.0 -256.0 942.0
+info_landmark "wtoxa" -896.0 448.0 1008.0
+info_landmark "wtoxb" 640.0 448.0 1008.0
+info_landmark "c2a5-c2a5w" -2080.0 -784.0 296.0

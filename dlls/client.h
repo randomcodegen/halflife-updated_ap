@@ -19,6 +19,10 @@
 #include <queue>
 #include <string>
 #include "eiface.h"
+// [ap]
+#include "vector.h"
+extern Vector g_SelectedSpawnPos;
+extern bool g_SelectedSpawnValid;
 
 struct PendingMessage
 {

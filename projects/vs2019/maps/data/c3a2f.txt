@@ -1,0 +1,4 @@
+info_landmark "c3a2_cf" -280.0 -984.0 -1784.0
+info_player_start "" -40.0 -1064.0 -1744.0
+info_landmark "c3a2_fc" 416.0 656.0 -1784.0
+info_landmark "c3a2_cf2" 304.0 656.0 -1784.0

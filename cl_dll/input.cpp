@@ -931,6 +931,11 @@ void CL_ResetButtonBits(int bits)
 InitInput
 ============
 */
+void ToggleMapMenu()
+{
+	g_APHud.ToggleMenu();
+}
+
 void InitInput()
 {
 	gEngfuncs.pfnAddCommand("+moveup", IN_UpDown);
@@ -986,6 +991,9 @@ void InitInput()
 	gEngfuncs.pfnAddCommand("-graph", IN_GraphUp);
 	gEngfuncs.pfnAddCommand("+break", IN_BreakDown);
 	gEngfuncs.pfnAddCommand("-break", IN_BreakUp);
+
+	// [ap]
+	gEngfuncs.pfnAddCommand("togglemapmenu", ToggleMapMenu);
 
 	lookstrafe = gEngfuncs.pfnRegisterVariable("lookstrafe", "0", FCVAR_ARCHIVE);
 	lookspring = gEngfuncs.pfnRegisterVariable("lookspring", "0", FCVAR_ARCHIVE);

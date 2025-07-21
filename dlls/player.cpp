@@ -2950,7 +2950,9 @@ void CBasePlayer::Spawn()
 
 	g_engfuncs.pfnSetPhysicsKeyValue(edict(), "slj", "0");
 	g_engfuncs.pfnSetPhysicsKeyValue(edict(), "hl", "1");
-	g_engfuncs.pfnSetPhysicsKeyValue(edict(), "bj", UTIL_dtos1(sv_allowbunnyhopping.value != 0 ? 1 : 0));
+	//g_engfuncs.pfnSetPhysicsKeyValue(edict(), "bj", UTIL_dtos1(sv_allowbunnyhopping.value != 0 ? 1 : 0));
+	// [ap]
+	g_engfuncs.pfnSetPhysicsKeyValue(edict(), "bj", "1");
 
 	m_iFOV = 0;		   // init field of view.
 	m_iClientFOV = -1; // make sure fov reset is sent
@@ -2976,7 +2978,15 @@ void CBasePlayer::Spawn()
 	m_flFallVelocity = 0;
 
 	g_pGameRules->SetDefaultPlayerTeam(this);
-	g_pGameRules->GetPlayerSpawnSpot(this);
+	if (g_SelectedSpawnValid)
+	{
+		pev->origin = g_SelectedSpawnPos + Vector(0, 0, 1); // bump up to avoid clipping
+		g_SelectedSpawnValid = false; // reset flag after use
+	}
+	else
+	{
+		g_pGameRules->GetPlayerSpawnSpot(this);
+	}
 
 	SET_MODEL(ENT(pev), "models/player.mdl");
 	g_ulModelIndexPlayer = pev->modelindex;

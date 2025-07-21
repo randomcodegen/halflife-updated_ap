@@ -1,0 +1,3 @@
+info_player_start "" 688.0 -32.0 -160.0
+info_landmark "lm2" 1024.0 144.0 -160.0
+info_landmark "lm1" -640.0 -2608.0 -432.0

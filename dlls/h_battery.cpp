@@ -113,8 +113,12 @@ void CRecharge::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useT
 	// if it's not a player, ignore
 	if (!FClassnameIs(pActivator->pev, "player"))
 		return;
-
-	ALERT(at_notice, "HEVUse: %s\n", STRING(this->pev->netname));
+	// after use, set body to 0 to stop sending checks and automap the edict
+	if (this->pev->body == 249) {
+		ALERT(at_notice, "HEVUse: %s\n", STRING(this->pev->netname));
+		this->pev->body = 0;
+	}
+	
 	if (!ap_can_use())
 		return;
 

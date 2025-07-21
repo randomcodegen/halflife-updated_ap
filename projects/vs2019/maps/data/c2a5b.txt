@@ -1,0 +1,3 @@
+info_player_start "" 48.0 592.0 -80.0
+info_landmark "c2a5b" 180.0 1104.0 -88.0
+info_landmark "c2a5_c" -2256.0 2432.0 40.0

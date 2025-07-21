@@ -1,0 +1,3 @@
+info_player_start "" 2168.0 904.0 888.0
+info_landmark "c2a3/a" -608.0 52.0 524.0
+info_landmark "c2a3a/b" 1544.0 1752.0 872.0

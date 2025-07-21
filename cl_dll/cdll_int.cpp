@@ -37,6 +37,8 @@
 #include "tri.h"
 #include "vgui_TeamFortressViewport.h"
 #include "filesystem_utils.h"
+// [ap]
+#include "ap_hud.h"
 
 cl_enginefunc_t gEngfuncs;
 CHud gHUD;
@@ -191,6 +193,8 @@ void DLLEXPORT HUD_Init()
 	//	RecClHudInit();
 	InitInput();
 	gHUD.Init();
+	// [ap] Init ImGui for menu drawing
+	g_APHud.InitImGui();
 	Scheme_Init();
 }
 
@@ -262,8 +266,10 @@ Called by engine every frame that client .dll is loaded
 void DLLEXPORT HUD_Frame(double time)
 {
 	//	RecClHudFrame(time);
-
+	
 	GetClientVoiceMgr()->Frame(time);
+	// [ap]
+	g_APHud.RenderMenu();
 }
 
 

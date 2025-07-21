@@ -1,0 +1,2 @@
+info_landmark "c4a3toc5a1" -2816.0 3399.0 -3467.0
+info_player_start "" -3383.0 3408.0 -3484.0

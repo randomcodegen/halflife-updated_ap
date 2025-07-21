@@ -188,8 +188,14 @@ void CWallHealth::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE us
 	// if it's not a player, ignore
 	if (!pActivator->IsPlayer())
 		return;
+
+	// after use, set body to 0 to stop sending checks and automap the edict
+	if (this->pev->body == 249)
+	{
+		ALERT(at_notice, "HealthUse: %s\n", STRING(this->pev->netname));
+		this->pev->body = 0;
+	}
 	
-	ALERT(at_notice, "HealthUse: %s\n", STRING(this->pev->netname));
 	if (!ap_can_use())
 		return;
 

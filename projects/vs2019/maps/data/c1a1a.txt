@@ -1,0 +1,4 @@
+info_landmark "c1a1atof" -1367.0 318.0 -196.0
+info_landmark "c1a1" -2460.0 -752.0 -280.0
+info_player_start "" -2584.0 -752.0 -248.0
+info_player_start "" -2880.0 1174.0 -231.0

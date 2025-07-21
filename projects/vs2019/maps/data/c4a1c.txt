@@ -1,0 +1,4 @@
+info_player_start "" -1528.0 -712.0 -840.0
+info_player_start "" 192.0 -2416.0 -496.0
+info_landmark "c4a1d" 264.0 -2344.0 -264.0
+info_landmark "c4a1c" -1048.0 -424.0 -241.0

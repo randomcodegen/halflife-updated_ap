@@ -1,0 +1,17 @@
+info_player_start "" 416.0 816.0 -1632.0
+info_player_deathmatch "" -976.0 -144.0 -1632.0
+info_player_deathmatch "" -848.0 -992.0 -1632.0
+info_player_deathmatch "" 1216.0 -1472.0 -1632.0
+info_player_deathmatch "" 928.0 -1120.0 -1584.0
+info_player_deathmatch "" 1248.0 -288.0 -1632.0
+info_player_deathmatch "" 640.0 -1024.0 -1776.0
+info_player_deathmatch "" 216.0 -1472.0 -1632.0
+info_player_deathmatch "" -544.0 -1248.0 -1632.0
+info_player_deathmatch "" -704.0 -576.0 -1640.0
+info_player_deathmatch "" -688.0 -648.0 -1520.0
+info_player_deathmatch "" 1184.0 -1104.0 -1648.0
+info_player_deathmatch "" 1232.0 -1360.0 -1520.0
+info_player_deathmatch "" 480.0 -64.0 -1632.0
+info_player_deathmatch "" 1232.0 96.0 -1648.0
+info_player_deathmatch "" -400.0 -160.0 -1632.0
+info_player_deathmatch "" -32.0 -464.0 -1568.0

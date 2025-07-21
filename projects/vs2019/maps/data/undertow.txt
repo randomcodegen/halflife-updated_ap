@@ -1,0 +1,11 @@
+info_player_start "" 128.0 -192.0 48.0
+info_player_deathmatch "" -128.0 -368.0 48.0
+info_player_deathmatch "" 128.0 368.0 48.0
+info_player_deathmatch "" 1616.0 -528.0 -144.0
+info_player_deathmatch "" 1600.0 336.0 -336.0
+info_player_deathmatch "" 368.0 416.0 373.0
+info_player_deathmatch "" -384.0 -400.0 373.0
+info_player_deathmatch "" -2080.0 0.0 368.0
+info_player_deathmatch "" -880.0 464.0 176.0
+info_player_deathmatch "" -880.0 -432.0 176.0
+info_player_deathmatch "" -1408.0 0.0 240.0

@@ -1,0 +1,7 @@
+info_landmark "c1a1bc" -88.0 -3138.0 -248.0
+info_landmark "c1a1c/d" -1088.0 1164.0 -2856.0
+info_player_start "" -88.0 -3168.0 -208.0
+info_landmark "c1a1dtoc1a1c" -1086.0 1407.0 -2604.0
+info_landmark "a1a2" -1508.0 1404.0 -2672.0
+info_player_start "" -496.0 -1000.0 -2676.0
+info_player_start "" 556.0 -3458.0 -207.0

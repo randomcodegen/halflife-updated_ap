@@ -1,0 +1,3 @@
+info_landmark "c1a0catoc1a1" 721.0 974.0 -16.0
+info_landmark "c1a0etoc" 1668.0 1120.0 566.0
+info_player_start "" -2106.0 894.0 -1546.0

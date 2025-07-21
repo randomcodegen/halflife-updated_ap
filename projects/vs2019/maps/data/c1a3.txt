@@ -1,0 +1,6 @@
+info_landmark "lm_c1a3_c0" -116.0 -1744.0 248.0
+info_landmark "c1a2_to_c1a3" -16.0 1589.0 96.0
+info_player_start "" 24.0 1517.0 47.0
+info_landmark "lm_c1a3_0d" 360.0 -768.0 120.0
+info_landmark "lm_c1a3_0d2" 140.0 -688.0 76.0
+info_landmark "c1a3toc1a4" 1066.0 1072.0 90.0

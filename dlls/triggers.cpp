@@ -1502,7 +1502,7 @@ void CChangeLevel::ChangeLevelNow(CBaseEntity* pActivator)
 
 	ASSERT(!FStrEq(m_szMapName, ""));
 	// [ap]
-	printf("Changelevel to %s\n", m_szMapName);
+	ALERT(at_notice, "Changelevel to %s\n", m_szMapName);
 
 	// Don't work in deathmatch
 	if (g_pGameRules->IsDeathmatch())

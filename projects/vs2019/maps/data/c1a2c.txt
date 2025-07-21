@@ -1,0 +1,3 @@
+info_player_start "" -896.0 -896.0 -164.0
+info_landmark "freezer" -928.0 -810.0 -116.0
+info_landmark "vents" -402.0 -1621.0 30.0

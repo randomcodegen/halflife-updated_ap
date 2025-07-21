@@ -1,0 +1,4 @@
+info_player_start "" -3000.0 -1880.0 -152.0
+info_landmark "c2a2ec2a2f" -3000.0 -1404.0 -164.0
+info_landmark "c2a2fc2a2g" 212.0 248.0 -16.0
+info_landmark "c2a2fc2a2g2" 464.0 540.0 -12.0

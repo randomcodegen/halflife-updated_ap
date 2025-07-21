@@ -7,6 +7,7 @@
 #include "triangleapi.h"
 #include "com_model.h"
 // [ap] Other dependencies
+#include "pm_shared.h"
 #include "pmtrace.h"
 #include "pm_defs.h"
 #include "filesystem_utils.h"
@@ -15,10 +16,241 @@
 #include <imgui.h>
 #include <imgui_impl_win32.h>
 #include <imgui_impl_opengl2.h>
+#include <MinHook.h>
 
 extern IFileSystem* g_pFileSystem;
 
+CHudAPText g_APHud;
+
+typedef BOOL(WINAPI* SwapBuffersFn)(HDC hdc);
+static SwapBuffersFn originalSwapBuffers = nullptr;
+static CHudAPText* g_HudInstance = nullptr;
+
+ImGuiContext* imgui_ctx = nullptr;
+
+void SetupMenuStyle()
+{
+	ImGuiStyle& style = ImGui::GetStyle();
+	ImVec4* colors = style.Colors;
+
+	// Base colors
+	colors[ImGuiCol_Text] = ImVec4(0.95f, 0.85f, 0.55f, 1.00f); // warm yellow text
+	colors[ImGuiCol_TextDisabled] = ImVec4(0.60f, 0.55f, 0.35f, 1.00f);
+
+	// Transparent dark background with a hint of brown/gray
+	colors[ImGuiCol_WindowBg] = ImVec4(0.05f, 0.05f, 0.03f, 0.85f);
+	colors[ImGuiCol_ChildBg] = ImVec4(0.07f, 0.07f, 0.04f, 0.85f);
+	colors[ImGuiCol_PopupBg] = ImVec4(0.08f, 0.08f, 0.05f, 0.85f);
+
+	// Borders & separators — dark orange/brown
+	colors[ImGuiCol_Border] = ImVec4(0.50f, 0.40f, 0.15f, 0.75f);
+	colors[ImGuiCol_BorderShadow] = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
+	colors[ImGuiCol_Separator] = colors[ImGuiCol_Border];
+	colors[ImGuiCol_SeparatorHovered] = ImVec4(0.75f, 0.65f, 0.25f, 1.00f);
+	colors[ImGuiCol_SeparatorActive] = ImVec4(0.85f, 0.75f, 0.30f, 1.00f);
+
+	// Headers (collapsing headers, etc) — warm orange
+	colors[ImGuiCol_Header] = ImVec4(0.45f, 0.35f, 0.10f, 1.00f);
+	colors[ImGuiCol_HeaderHovered] = ImVec4(0.70f, 0.60f, 0.20f, 1.00f);
+	colors[ImGuiCol_HeaderActive] = ImVec4(0.60f, 0.50f, 0.15f, 1.00f);
+
+	// Buttons — medium brown/orange with hover glow
+	colors[ImGuiCol_Button] = ImVec4(0.35f, 0.25f, 0.08f, 1.00f);
+	colors[ImGuiCol_ButtonHovered] = ImVec4(0.75f, 0.60f, 0.25f, 1.00f);
+	colors[ImGuiCol_ButtonActive] = ImVec4(0.60f, 0.50f, 0.15f, 1.00f);
+
+	// Frames (input boxes, sliders, etc) — dark, transparent brown with highlight
+	colors[ImGuiCol_FrameBg] = ImVec4(0.15f, 0.12f, 0.06f, 0.55f);
+	colors[ImGuiCol_FrameBgHovered] = ImVec4(0.35f, 0.30f, 0.10f, 0.80f);
+	colors[ImGuiCol_FrameBgActive] = ImVec4(0.50f, 0.45f, 0.15f, 1.00f);
+
+	// Tabs
+	colors[ImGuiCol_Tab] = ImVec4(0.15f, 0.12f, 0.06f, 0.80f);
+	colors[ImGuiCol_TabHovered] = ImVec4(0.60f, 0.50f, 0.15f, 1.00f);
+	colors[ImGuiCol_TabActive] = ImVec4(0.75f, 0.65f, 0.25f, 1.00f);
+	colors[ImGuiCol_TabUnfocused] = ImVec4(0.10f, 0.08f, 0.04f, 0.50f);
+	colors[ImGuiCol_TabUnfocusedActive] = ImVec4(0.30f, 0.25f, 0.10f, 0.90f);
+
+	// Titles
+	colors[ImGuiCol_TitleBg] = ImVec4(0.45f, 0.35f, 0.10f, 1.00f);
+	colors[ImGuiCol_TitleBgActive] = ImVec4(0.65f, 0.55f, 0.20f, 1.00f);
+	colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.15f, 0.12f, 0.06f, 0.60f);
+
+	// Scrollbar
+	colors[ImGuiCol_ScrollbarBg] = ImVec4(0.10f, 0.08f, 0.04f, 0.60f);
+	colors[ImGuiCol_ScrollbarGrab] = ImVec4(0.45f, 0.35f, 0.10f, 0.90f);
+	colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.75f, 0.65f, 0.25f, 1.00f);
+	colors[ImGuiCol_ScrollbarGrabActive] = ImVec4(0.85f, 0.75f, 0.30f, 1.00f);
+
+	// Checkmarks, sliders, etc
+	colors[ImGuiCol_CheckMark] = ImVec4(0.75f, 0.65f, 0.25f, 1.00f);
+	colors[ImGuiCol_SliderGrab] = ImVec4(0.60f, 0.50f, 0.15f, 1.00f);
+	colors[ImGuiCol_SliderGrabActive] = ImVec4(0.75f, 0.65f, 0.25f, 1.00f);
+
+	// Modal windows
+	colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.00f, 0.00f, 0.00f, 0.65f);
+
+	// Resize grips
+	colors[ImGuiCol_ResizeGrip] = ImVec4(0.45f, 0.35f, 0.10f, 0.85f);
+	colors[ImGuiCol_ResizeGripHovered] = ImVec4(0.75f, 0.65f, 0.25f, 1.00f);
+	colors[ImGuiCol_ResizeGripActive] = ImVec4(0.85f, 0.75f, 0.30f, 1.00f);
+
+	// Rounding & padding for that smooth UI feel
+	style.WindowRounding = 5.0f;
+	style.FrameRounding = 4.0f;
+	style.GrabRounding = 4.0f;
+	style.ScrollbarRounding = 3.0f;
+	style.ChildRounding = 4.0f;
+
+	style.WindowBorderSize = 1.0f;
+	style.FrameBorderSize = 1.0f;
+
+	style.WindowPadding = ImVec2(10, 10);
+	style.FramePadding = ImVec2(6, 4);
+	style.ItemSpacing = ImVec2(8, 6);
+	style.ItemInnerSpacing = ImVec2(6, 4);
+	style.TouchExtraPadding = ImVec2(0, 0);
+
+	style.GrabMinSize = 10.0f;
+	style.ScrollbarSize = 14.0f;
+
+	ImGuiIO& io = ImGui::GetIO();
+	io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\segoeui.ttf", 18.0f);
+}
+
+void InitImGuiIfNeeded()
+{
+	if (imgui_ctx)
+		return;
+
+	imgui_ctx = ImGui::CreateContext();
+	ImGui::SetCurrentContext(imgui_ctx);
+
+	ImGuiIO& io = ImGui::GetIO();
+	(void)io;
+
+	ImGui::StyleColorsDark();
+
+	HWND hwnd = GetActiveWindow(); // Or another reliable method
+	ImGui_ImplWin32_Init(hwnd);
+	ImGui_ImplOpenGL2_Init();
+
+	SetupMenuStyle();
+}
+
+int CHudAPText::HookedSwapBuffers(void* hdc)
+{
+	InitImGuiIfNeeded();
+	if (menuOpen)
+	{
+		RenderMenu();
+	}
+
+	using PFN_SWAPBUFFERS = BOOL(WINAPI*)(HDC);
+	auto original = reinterpret_cast<PFN_SWAPBUFFERS>(originalSwapBuffers);
+	return original((HDC)hdc);
+}
+
+// Trampoline for MinHook (must match real signature)
+static BOOL WINAPI StaticHookedSwapBuffers(HDC hdc)
+{
+	if (g_HudInstance)
+		return g_HudInstance->HookedSwapBuffers((void*)hdc);
+
+	if (originalSwapBuffers)
+		return originalSwapBuffers(hdc);
+
+	return FALSE;
+}
+
+void TryInstallHook()
+{
+	static bool hookInstalled = false;
+	if (hookInstalled)
+		return;
+
+	if (MH_Initialize() != MH_OK)
+		return;
+
+	HMODULE hOpenGL = GetModuleHandleA("opengl32.dll");
+	if (!hOpenGL)
+		return;
+
+	void* pSwapBuffers = GetProcAddress(hOpenGL, "wglSwapBuffers");
+	if (!pSwapBuffers)
+		return;
+
+	if (MH_CreateHook(pSwapBuffers, &StaticHookedSwapBuffers, (void**)&originalSwapBuffers) == MH_OK)
+	{
+		if (MH_EnableHook(pSwapBuffers) == MH_OK)
+		{
+			hookInstalled = true;
+			printf("MinHook: SwapBuffers hooked!\n");
+		}
+	}
+}
+
+struct MapEntityData
+{
+	std::string classname;
+	std::string targetname;
+	Vector origin;
+};
 static std::vector<std::string> mapList;
+std::map<std::string, std::vector<MapEntityData>> mapEntityDatabase;
+
+std::vector<MapEntityData> LoadMapEntityData(const std::string& mapname)
+{
+	std::vector<MapEntityData> results;
+
+	char path[128];
+	snprintf(path, sizeof(path), "maps/data/%s.txt", mapname.c_str());
+
+	FILE* fp = fopen(path, "r");
+	if (!fp)
+	{
+		printf("Could not open %s for reading.\n", path);
+		return results;
+	}
+
+	char line[256];
+	while (fgets(line, sizeof(line), fp))
+	{
+		char classname[64] = {0};
+		char targetname[64] = {0};
+		float x = 0, y = 0, z = 0;
+
+		// Try to parse non-empty targetname first
+		int matches = sscanf(line, "%63s \"%63[^\"]\" %f %f %f", classname, targetname, &x, &y, &z);
+		if (matches < 5)
+		{
+			// If that fails, try parsing empty quotes ""
+			matches = sscanf(line, "%63s \"\" %f %f %f", classname, &x, &y, &z);
+			if (matches == 4)
+			{
+				// No targetname, set it to empty string
+				targetname[0] = '\0';
+				matches = 5; // Mark as full match
+			}
+		}
+
+		if (matches == 5)
+		{
+			MapEntityData data;
+			data.classname = classname;
+			data.targetname = targetname;
+			data.origin = Vector(x, y, z);
+			results.push_back(std::move(data));
+		}
+		else
+		{
+			printf("Skipping malformed line: %s", line);
+		}
+	}
+
+	fclose(fp);
+	return results;
+}
 
 void LoadMaps()
 {
@@ -57,6 +289,16 @@ void LoadMaps()
 			} while ((fileName = g_pFileSystem->FindNext(handle)) != nullptr);
 
 			g_pFileSystem->FindClose(handle);
+		}
+
+		// load spawnpoints and landmarks data
+		for (const auto& mapName : mapList)
+		{
+			std::vector<MapEntityData> entities = LoadMapEntityData(mapName);
+			if (!entities.empty())
+			{
+				mapEntityDatabase[mapName] = std::move(entities);
+			}
 		}
 
 		initialized = true;
@@ -209,121 +451,46 @@ bool CHudAPText::Init(void)
 	return true;
 }
 
-ImGuiContext* imgui_ctx;
-
-/**/
-void SetupMenuStyle()
+bool CHudAPText::InitImGui()
 {
-	ImGuiStyle& style = ImGui::GetStyle();
-	ImVec4* colors = style.Colors;
-
-	// Base colors
-	colors[ImGuiCol_Text] = ImVec4(0.95f, 0.85f, 0.55f, 1.00f); // warm yellow text
-	colors[ImGuiCol_TextDisabled] = ImVec4(0.60f, 0.55f, 0.35f, 1.00f);
-
-	// Transparent dark background with a hint of brown/gray
-	colors[ImGuiCol_WindowBg] = ImVec4(0.05f, 0.05f, 0.03f, 0.85f);
-	colors[ImGuiCol_ChildBg] = ImVec4(0.07f, 0.07f, 0.04f, 0.85f);
-	colors[ImGuiCol_PopupBg] = ImVec4(0.08f, 0.08f, 0.05f, 0.85f);
-
-	// Borders & separators — dark orange/brown
-	colors[ImGuiCol_Border] = ImVec4(0.50f, 0.40f, 0.15f, 0.75f);
-	colors[ImGuiCol_BorderShadow] = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
-	colors[ImGuiCol_Separator] = colors[ImGuiCol_Border];
-	colors[ImGuiCol_SeparatorHovered] = ImVec4(0.75f, 0.65f, 0.25f, 1.00f);
-	colors[ImGuiCol_SeparatorActive] = ImVec4(0.85f, 0.75f, 0.30f, 1.00f);
-
-	// Headers (collapsing headers, etc) — warm orange
-	colors[ImGuiCol_Header] = ImVec4(0.45f, 0.35f, 0.10f, 1.00f);
-	colors[ImGuiCol_HeaderHovered] = ImVec4(0.70f, 0.60f, 0.20f, 1.00f);
-	colors[ImGuiCol_HeaderActive] = ImVec4(0.60f, 0.50f, 0.15f, 1.00f);
-
-	// Buttons — medium brown/orange with hover glow
-	colors[ImGuiCol_Button] = ImVec4(0.35f, 0.25f, 0.08f, 1.00f);
-	colors[ImGuiCol_ButtonHovered] = ImVec4(0.75f, 0.60f, 0.25f, 1.00f);
-	colors[ImGuiCol_ButtonActive] = ImVec4(0.60f, 0.50f, 0.15f, 1.00f);
-
-	// Frames (input boxes, sliders, etc) — dark, transparent brown with highlight
-	colors[ImGuiCol_FrameBg] = ImVec4(0.15f, 0.12f, 0.06f, 0.55f);
-	colors[ImGuiCol_FrameBgHovered] = ImVec4(0.35f, 0.30f, 0.10f, 0.80f);
-	colors[ImGuiCol_FrameBgActive] = ImVec4(0.50f, 0.45f, 0.15f, 1.00f);
-
-	// Tabs
-	colors[ImGuiCol_Tab] = ImVec4(0.15f, 0.12f, 0.06f, 0.80f);
-	colors[ImGuiCol_TabHovered] = ImVec4(0.60f, 0.50f, 0.15f, 1.00f);
-	colors[ImGuiCol_TabActive] = ImVec4(0.75f, 0.65f, 0.25f, 1.00f);
-	colors[ImGuiCol_TabUnfocused] = ImVec4(0.10f, 0.08f, 0.04f, 0.50f);
-	colors[ImGuiCol_TabUnfocusedActive] = ImVec4(0.30f, 0.25f, 0.10f, 0.90f);
-
-	// Titles
-	colors[ImGuiCol_TitleBg] = ImVec4(0.45f, 0.35f, 0.10f, 1.00f);
-	colors[ImGuiCol_TitleBgActive] = ImVec4(0.65f, 0.55f, 0.20f, 1.00f);
-	colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.15f, 0.12f, 0.06f, 0.60f);
-
-	// Scrollbar
-	colors[ImGuiCol_ScrollbarBg] = ImVec4(0.10f, 0.08f, 0.04f, 0.60f);
-	colors[ImGuiCol_ScrollbarGrab] = ImVec4(0.45f, 0.35f, 0.10f, 0.90f);
-	colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.75f, 0.65f, 0.25f, 1.00f);
-	colors[ImGuiCol_ScrollbarGrabActive] = ImVec4(0.85f, 0.75f, 0.30f, 1.00f);
-
-	// Checkmarks, sliders, etc
-	colors[ImGuiCol_CheckMark] = ImVec4(0.75f, 0.65f, 0.25f, 1.00f);
-	colors[ImGuiCol_SliderGrab] = ImVec4(0.60f, 0.50f, 0.15f, 1.00f);
-	colors[ImGuiCol_SliderGrabActive] = ImVec4(0.75f, 0.65f, 0.25f, 1.00f);
-
-	// Modal windows
-	colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.00f, 0.00f, 0.00f, 0.65f);
-
-	// Resize grips
-	colors[ImGuiCol_ResizeGrip] = ImVec4(0.45f, 0.35f, 0.10f, 0.85f);
-	colors[ImGuiCol_ResizeGripHovered] = ImVec4(0.75f, 0.65f, 0.25f, 1.00f);
-	colors[ImGuiCol_ResizeGripActive] = ImVec4(0.85f, 0.75f, 0.30f, 1.00f);
-
-	// Rounding & padding for that smooth UI feel
-	style.WindowRounding = 5.0f;
-	style.FrameRounding = 4.0f;
-	style.GrabRounding = 4.0f;
-	style.ScrollbarRounding = 3.0f;
-	style.ChildRounding = 4.0f;
-
-	style.WindowBorderSize = 1.0f;
-	style.FrameBorderSize = 1.0f;
-
-	style.WindowPadding = ImVec2(10, 10);
-	style.FramePadding = ImVec2(6, 4);
-	style.ItemSpacing = ImVec2(8, 6);
-	style.ItemInnerSpacing = ImVec2(6, 4);
-	style.TouchExtraPadding = ImVec2(0, 0);
-
-	style.GrabMinSize = 10.0f;
-	style.ScrollbarSize = 14.0f;
-
-	ImGuiIO& io = ImGui::GetIO();
-	io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\segoeui.ttf", 16.0f);
+	g_HudInstance = this;
+	TryInstallHook();
+	return true;
 }
 
+/**/
 
+void CHudAPText::ToggleMenu()
+{
+	menuOpen = !menuOpen;
+}
+
+bool CHudAPText::IsMenuOpen() const
+{
+	return menuOpen;
+}
+
+static bool wasMenuOpen = false;
 
 bool CHudAPText::VidInit(void)
 {
 	g_TriggerZones.clear();
-	menuOpen = false;
-	imgui_ctx = ImGui::CreateContext();
-	ImGui::SetCurrentContext(imgui_ctx);
-	ImGui::CreateContext();
+
+	// Force input reset at map load
+	gEngfuncs.pfnSetMouseEnable(1);
+	IN_ActivateMouse();
+
 	ImGuiIO& io = ImGui::GetIO();
-	(void)io;
+	io.MouseDrawCursor = false;
+	io.MouseDown[0] = false;
+	io.MouseDown[1] = false;
 
-	// Setup ImGui style
-	ImGui::StyleColorsDark();
+	wasMenuOpen = false;
+	menuOpen = false;
 
-	// Initialize platform and renderer bindings
-	HWND hwnd = GetActiveWindow();
-	ImGui_ImplWin32_Init(hwnd);
-	ImGui_ImplOpenGL2_Init();
+	// Create and set ImGui context (only once)
+	InitImGuiIfNeeded();
 
-	SetupMenuStyle();
-	
 	return true;
 }
 
@@ -345,8 +512,6 @@ void CHudAPText::DrawCustomCrosshair()
 	FillRGBA(x - crosshairSize, y, crosshairSize * 2 + 1, 1, r, g, b, 255); // horizontal
 	FillRGBA(x, y - crosshairSize, 1, crosshairSize * 2 + 1, r, g, b, 255); // vertical
 }
-
-static int selectedIndex = -1;
 
 bool menuOpen = false;
 
@@ -377,22 +542,32 @@ void UpdateMouseState()
 	}
 }
 
+static int selectedIndex = -1;
+static int selectedSpawnIndex = -1;
+static std::vector<MapEntityData> currentSpawnpoints;
+Vector g_SelectedSpawnPos = Vector(0, 0, 0);
+
+void SendSelectedSpawnToServer(const Vector& pos)
+{
+	char cmd[128];
+	snprintf(cmd, sizeof(cmd), "selectspawn %f %f %f", pos.x, pos.y, pos.z);
+	printf("Sending spawn command: selectspawn %f %f %f\n", pos.x, pos.y, pos.z);
+	gEngfuncs.pfnServerCmd(cmd);
+	
+}
+
 void ShowMapMenu()
 {
 	menuOpen = true;
 	LoadMaps();
 	IN_DeactivateMouse();
-	
-	ImGuiStyle& style = ImGui::GetStyle();
-
 
 	ImGui::Begin("Map Menu", nullptr,
 		ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize |
 			ImGuiWindowFlags_AlwaysAutoResize);
 
-	ImGui::Text("Select a map to load:");
+	ImGui::Text("Select a map:");
 
-	// Begin child region to get scrollbar if many items
 	ImGui::BeginChild("MapListChild", ImVec2(300, 200), 1);
 
 	for (int i = 0; i < (int)mapList.size(); i++)
@@ -400,34 +575,167 @@ void ShowMapMenu()
 		if (ImGui::Selectable(mapList[i].c_str(), selectedIndex == i))
 		{
 			selectedIndex = i;
+			selectedSpawnIndex = -1;
 
-			// Immediately load the selected map
+			// Load spawnpoints/landmarks for selected map
+			auto it = mapEntityDatabase.find(mapList[i]);
+			if (it != mapEntityDatabase.end())
+			{
+				currentSpawnpoints.clear();
+				for (const auto& ent : it->second)
+				{
+					if (ent.classname == "info_player_start" ||
+						ent.classname == "info_player_deathmatch" ||
+						ent.classname == "info_landmark")
+					{
+						currentSpawnpoints.push_back(ent);
+					}
+				}
+
+				// Default to first spawnpoint if available
+				if (!currentSpawnpoints.empty())
+					selectedSpawnIndex = 0;
+				else
+					selectedSpawnIndex = -1;
+
+			}
+		}
+	}
+	ImGui::EndChild();
+
+	if (selectedIndex != -1)
+	{
+		ImGui::Separator();
+		ImGui::Text("Select a spawnpoint:");
+
+		ImGui::BeginChild("SpawnListChild", ImVec2(300, 150), true);
+		for (int i = 0; i < (int)currentSpawnpoints.size(); i++)
+		{
+			const auto& spawn = currentSpawnpoints[i];
+
+			std::string label = spawn.classname;
+			if (!spawn.targetname.empty())
+				label += " [" + spawn.targetname + "]";
+
+			char buf[256];
+			snprintf(buf, sizeof(buf), "%s (%.0f, %.0f, %.0f)",
+				label.c_str(), spawn.origin.x, spawn.origin.y, spawn.origin.z);
+
+			if (ImGui::Selectable(buf, selectedSpawnIndex == i))
+			{
+				selectedSpawnIndex = i;
+			}
+		}
+		ImGui::EndChild();
+	}
+
+	if (ImGui::Button("Load Map and Spawn", ImVec2(-1, 0)))
+	{
+		if (selectedIndex != -1)
+		{
+			const std::string& mapName = mapList[selectedIndex];
+
+			// Optionally store selectedSpawnIndex somewhere global for spawn handling
+			if (selectedSpawnIndex != -1)
+			{
+				const Vector &spawnPos = currentSpawnpoints[selectedSpawnIndex].origin;
+				SendSelectedSpawnToServer(spawnPos);
+			}
+
 			char cmd[256];
-			snprintf(cmd, sizeof(cmd), "map %s", mapList[i].c_str());
+			const char* levelname = gEngfuncs.pfnGetLevelName();
+			if (!strcmp(levelname, ""))
+				snprintf(cmd, sizeof(cmd), "map %s", mapName.c_str());
+			else
+				snprintf(cmd, sizeof(cmd), "changelevel %s", mapName.c_str());
+			menuOpen = false;
 			gEngfuncs.pfnClientCmd(cmd);
 		}
 	}
 
-	ImGui::EndChild();
-
 	if (ImGui::Button("Cancel", ImVec2(-1, 0)))
 	{
-		// TODO: Hide menu or whatever
 		selectedIndex = -1;
+		selectedSpawnIndex = -1;
+		currentSpawnpoints.clear();
+		menuOpen = false;
 	}
 
 	ImGui::End();
 }
 
-bool CHudAPText::Draw(float flTime)
+void CHudAPText::RenderMenu()
 {
 	if (menuOpen)
-		gEngfuncs.pfnSetMouseEnable(0);
+	{
+		if (!wasMenuOpen)
+		{
+			// Entering menu: disable game mouse input
+			gEngfuncs.pfnSetMouseEnable(0);
+			IN_DeactivateMouse();
+
+			ImGuiIO& io = ImGui::GetIO();
+			io.MouseDrawCursor = true;
+		}
+
+		UpdateMouseState();
+
+		ImGui_ImplOpenGL2_NewFrame();
+		ImGui_ImplWin32_NewFrame();
+		ImGui::NewFrame();
+
+		ShowMapMenu();
+
+		ImGui::Render();
+		ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
+	}
+	else if (wasMenuOpen)
+	{
+		// Exiting menu: re-enable game mouse input
+		gEngfuncs.pfnSetMouseEnable(1);
+		IN_ActivateMouse();
+
+		ImGuiIO& io = ImGui::GetIO();
+		io.MouseDrawCursor = false;
+		io.MouseDown[0] = false;
+		io.MouseDown[1] = false;
+	}
+
+	wasMenuOpen = menuOpen;
+}
+
+bool CHudAPText::Draw(float flTime)
+{
+	/*
+	if (menuOpen)
+	{
+		if (!wasMenuOpen)
+		{
+			// Entering menu
+			gEngfuncs.pfnSetMouseEnable(0);
+			IN_DeactivateMouse();
+		}
+		UpdateMouseState();
+	}
+	else if (wasMenuOpen)
+	{
+		// Menu just closed — re-enable game input
+		gEngfuncs.pfnSetMouseEnable(1);
+		IN_ActivateMouse();
+
+		// Reset ImGui input state
+		ImGuiIO& io = ImGui::GetIO();
+		io.MouseDrawCursor = false;
+		io.MouseDown[0] = false;
+		io.MouseDown[1] = false;
+	}
+
+	wasMenuOpen = menuOpen;
 	const char* mapName = gEngfuncs.pfnGetLevelName();
-	UpdateMouseState();
 	if (AP_DUMP_EDICT)
 		LoadMaps();
-	else if (mapName && strcmp(mapName, "maps/menu.bsp") == 0) {
+	//else if (mapName && strcmp(mapName, "maps/menu.bsp") == 0) {
+	else if (menuOpen) {
 		ImGui_ImplOpenGL2_NewFrame();
 		ImGui_ImplWin32_NewFrame();
 		ImGui::NewFrame();
@@ -437,7 +745,8 @@ bool CHudAPText::Draw(float flTime)
 		// Rendering
 		ImGui::Render();
 		ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
-	}
+	}*/
+	RenderMenu();
 	
 	char szText[128];
 	snprintf(szText, sizeof(szText),

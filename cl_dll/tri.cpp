@@ -372,10 +372,10 @@ void DLLEXPORT HUD_DrawTransparentTriangles()
 			if (strstr(modelName, "models/barney.mdl") && DrawBarney)
 				DrawBoundingBoxEntGL(ent, 1.0f, 0.0f, 0.0f, 1.0f);
 			// DEBUG
-			if (strstr(modelName, "models/scientist.mdl") && DrawScientist)
+			/* if (strstr(modelName, "models/scientist.mdl") && DrawScientist)
 				printf("Drawing %s with sequ %i\n", modelName, sequ);
 			if (strstr(modelName, "models/barney.mdl") && DrawBarney)
-				printf("Drawing %s with sequ %i\n", modelName, sequ);
+				printf("Drawing %s with sequ %i\n", modelName, sequ);*/
 		}
 	}
 

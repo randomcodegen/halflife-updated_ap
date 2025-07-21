@@ -50,7 +50,6 @@
 
 // [ap]
 #include "ap_integration.h"
-#include "UserMessages.h"
 
 DLL_GLOBAL unsigned int g_ulFrameCount;
 
@@ -551,6 +550,9 @@ void Host_Say(edict_t* pEntity, bool teamonly)
 	}
 }
 
+// [ap]
+Vector g_SelectedSpawnPos = Vector(0, 0, 0);
+bool g_SelectedSpawnValid = false;
 
 /*
 ===========
@@ -563,7 +565,17 @@ void ClientCommand(edict_t* pEntity)
 {
 	const char* pcmd = CMD_ARGV(0);
 	const char* pstr;
+	// [ap] process early
+	if (FStrEq(pcmd, "selectspawn"))
+	{
+		// Arguments start after command
+		float x = atof(CMD_ARGV(1));
+		float y = atof(CMD_ARGV(2));
+		float z = atof(CMD_ARGV(3));
 
+		g_SelectedSpawnPos = Vector(x, y, z);
+		g_SelectedSpawnValid = true;
+	}
 	// Is the client spawned yet?
 	if (!pEntity->pvPrivateData)
 		return;
@@ -766,7 +778,53 @@ void ServerDeactivate()
 	// Peform any shutdown operations here...
 	//
 }
+// [ap]
 bool g_bMapLoaded = false;
+void DumpMapSpawnAndLandmarkData()
+{
+	const char* mapname = STRING(gpGlobals->mapname);
+	if (!mapname || !*mapname)
+		return;
+
+	char path[128];
+	snprintf(path, sizeof(path), "maps/data/%s.txt", mapname);
+
+	FILE* fp = fopen(path, "w");
+	if (!fp)
+	{
+		ALERT(at_error, "Could not open %s for writing.\n", path);
+		return;
+	}
+
+	edict_t* pEnt = NULL;
+	for (int i = 0; i < gpGlobals->maxEntities; ++i)
+	{
+		pEnt = INDEXENT(i);
+		if (!pEnt || pEnt->free)
+			continue;
+
+		const char* classname = STRING(pEnt->v.classname);
+		if (!classname)
+			continue;
+
+		if (!_stricmp(classname, "info_player_start") ||
+			!_stricmp(classname, "info_player_deathmatch") ||
+			!_stricmp(classname, "info_landmark"))
+		{
+			const char* targetname = STRING(pEnt->v.targetname);
+			const Vector& origin = pEnt->v.origin;
+
+			fprintf(fp, "%s \"%s\" %.1f %.1f %.1f\n",
+				classname,
+				targetname ? targetname : "",
+				origin.x, origin.y, origin.z);
+		}
+	}
+
+	fclose(fp);
+	ALERT(at_console, "Dumped spawn and landmark data for %s\n", mapname);
+}
+
 void ServerActivate(edict_t* pEdictList, int edictCount, int clientMax)
 {
 	int i;
@@ -790,6 +848,7 @@ void ServerActivate(edict_t* pEdictList, int edictCount, int clientMax)
 		{
 			ALERT(at_error, "Failed to open dump file: %s\n", filepath);
 		}
+		DumpMapSpawnAndLandmarkData();
 	}
 
 	for (i = 0; i < edictCount; i++)
@@ -814,7 +873,7 @@ void ServerActivate(edict_t* pEdictList, int edictCount, int clientMax)
 
 		const char* classname = STRING(pEdictList[i].v.classname);
 		const char* netname = STRING(pEdictList[i].v.netname);
-		printf("Spawning %s\n", classname);
+		//printf("Spawning %s\n", classname);
 		if (AP_DUMP_EDICT && fp && pClass && ((strcmp(netname, "") && !strcmp(classname, "func_breakable")) || (strchr(classname, '_') && (strncmp(classname, "item_", 5) == 0 || strncmp(classname, "ammo_", 5) == 0 || strncmp(classname, "weapon_", 7) == 0 || strncmp(classname, "monster_", 8) == 0))))
 		{
 			// Get the part after the prefix
@@ -859,17 +918,17 @@ void PlayerPreThink(edict_t* pEntity)
 }
 
 // [ap]
-#define MAX_MESSAGES_PER_FRAME 5
+#define MAX_MESSAGES_PER_FRAME 2
 std::queue<PendingMessage> g_MessageQueue;
 void ProcessPendingMessages()
 {
 	int sentCount = 0;
-
+	
 	while (!g_MessageQueue.empty() && sentCount < MAX_MESSAGES_PER_FRAME)
 	{
 		const PendingMessage& msg = g_MessageQueue.front();
 
-		MESSAGE_BEGIN(MSG_BROADCAST, gmsg_MultiLineNotify);
+		 MESSAGE_BEGIN(MSG_BROADCAST, gmsg_MultiLineNotify);
 		WRITE_BYTE(msg.level);
 		WRITE_STRING(msg.text.c_str());
 		MESSAGE_END();

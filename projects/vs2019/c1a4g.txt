@@ -1,0 +1,5 @@
+{"id": 1, "name": "Barney_dead", "classname": "monster_barney_dead", "uuid": 17181312855744473328},
+{"id": 2, "name": "357", "classname": "weapon_357", "uuid": 1055111033141227288},
+{"id": 3, "name": "357", "classname": "ammo_357", "uuid": 6474058817126951513},
+{"id": 4, "name": "357", "classname": "ammo_357", "uuid": 9911825888626037839},
+{"id": 5, "name": "Scientist_dead", "classname": "monster_scientist_dead", "uuid": 16126994104618422020},

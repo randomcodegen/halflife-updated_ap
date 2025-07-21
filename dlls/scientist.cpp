@@ -831,12 +831,15 @@ void CScientist::PainSound()
 //=========================================================
 void CScientist::DeathSound()
 {
+	ALERT(at_notice, "Scientist %s killed.\n", STRING(this->pev->netname));
 	PainSound();
 }
 
 
 void CScientist::Killed(entvars_t* pevAttacker, int iGib)
 {
+	const char* scientistName = STRING(pev->netname);
+	ALERT(at_notice, "Scientist %s gibbed.\n", STRING(this->pev->netname));
 	SetUse(NULL);
 	CTalkMonster::Killed(pevAttacker, iGib);
 }

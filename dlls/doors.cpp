@@ -22,6 +22,8 @@
 #include "util.h"
 #include "cbase.h"
 #include "doors.h"
+// [ap]
+#include "ap_integration.h"
 
 
 extern void SetMovedir(entvars_t* ev);
@@ -544,6 +546,11 @@ void CBaseDoor::DoorTouch(CBaseEntity* pOther)
 		return;
 	}
 
+	// [ap] TODO: can_door here
+	ALERT(at_console, "DoorTouch\n");
+	if (FClassnameIs(pevToucher, "player") && !ap_can_door())
+		return;
+
 	m_hActivator = pOther; // remember who activated the door
 
 	if (DoorActivate())
@@ -1052,6 +1059,11 @@ bool CMomentaryDoor::KeyValue(KeyValueData* pkvd)
 
 void CMomentaryDoor::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value)
 {
+	// [ap] TODO: can_door here
+	ALERT(at_console, "DoorUse\n");
+	if (FClassnameIs(pActivator->pev, "player") && !ap_can_door())
+		return;
+
 	if (useType != USE_SET) // Momentary buttons will pass down a float in here
 		return;
 

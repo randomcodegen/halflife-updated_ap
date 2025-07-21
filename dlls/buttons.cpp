@@ -25,6 +25,8 @@
 #include "cbase.h"
 #include "saverestore.h"
 #include "doors.h"
+// [ap]
+#include "ap_integration.h"
 
 #define SF_BUTTON_DONTMOVE 1
 #define SF_ROTBUTTON_NOTSOLID 1
@@ -682,6 +684,13 @@ void CBaseButton::ButtonUse(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_T
 	if (m_toggle_state == TS_GOING_UP || m_toggle_state == TS_GOING_DOWN)
 		return;
 
+	const char* activator_classname = STRING(pActivator->edict()->v.classname);
+	const char* caller_classname = STRING(pCaller->edict()->v.classname);
+
+	ALERT(at_notice, "ButtonUse\n");
+	if (FClassnameIs(pActivator->pev, "player") && !ap_can_use())
+		return;
+
 	m_hActivator = pActivator;
 	if (m_toggle_state == TS_AT_TOP)
 	{
@@ -762,7 +771,7 @@ void CBaseButton::ButtonTouch(CBaseEntity* pOther)
 void CBaseButton::ButtonActivate()
 {
 	EMIT_SOUND(ENT(pev), CHAN_VOICE, (char*)STRING(pev->noise), 1, ATTN_NORM);
-
+	printf("Master: %s\n",STRING(m_sMaster));
 	if (!UTIL_IsMasterTriggered(m_sMaster, m_hActivator))
 	{
 		// button is locked, play locked sound

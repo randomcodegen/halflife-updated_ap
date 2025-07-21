@@ -1,0 +1,8 @@
+{"id": 1, "name": "Sentry", "classname": "monster_sentry", "uuid": 17808802477485181510},
+{"id": 2, "name": "Sentry", "classname": "monster_sentry", "uuid": 15675888889796650908},
+{"id": 3, "name": "Human_grunt", "classname": "monster_human_grunt", "uuid": 6692748081931578692},
+{"id": 4, "name": "Human_grunt", "classname": "monster_human_grunt", "uuid": 9650979001466099494},
+{"id": 5, "name": "Human_grunt", "classname": "monster_human_grunt", "uuid": 14566792167017925888},
+{"id": 6, "name": "Tripmine", "classname": "monster_tripmine", "uuid": 11979011529165149081},
+{"id": 7, "name": "Tripmine", "classname": "monster_tripmine", "uuid": 7164270742307556956},
+{"id": 8, "name": "Tripmine", "classname": "monster_tripmine", "uuid": 15046404257708169106},

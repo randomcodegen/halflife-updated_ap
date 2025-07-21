@@ -576,6 +576,10 @@ void CWorld::Precache()
 		PRECACHE_MODEL("models/agibs.mdl");
 	}
 
+	// [ap] precache models
+	PRECACHE_MODEL("models/ap-logo.mdl");
+	PRECACHE_MODEL("models/ap-logo-prog.mdl");
+
 	PRECACHE_SOUND("weapons/ric1.wav");
 	PRECACHE_SOUND("weapons/ric2.wav");
 	PRECACHE_SOUND("weapons/ric3.wav");

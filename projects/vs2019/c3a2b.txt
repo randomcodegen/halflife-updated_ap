@@ -1,0 +1,3 @@
+{"id": 1, "name": "Gaussclip", "classname": "ammo_gaussclip", "uuid": 13969910099399020425},
+{"id": 2, "name": "Alien_slave", "classname": "monster_alien_slave", "uuid": 6654912757207764767},
+{"id": 3, "name": "Alien_slave", "classname": "monster_alien_slave", "uuid": 3749896779440347029},

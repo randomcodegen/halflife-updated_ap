@@ -119,6 +119,13 @@ void CItem::ItemTouch(CBaseEntity* pOther)
 		return;
 	}
 
+	// [ap] just fire subs and leave
+	SUB_UseTargets(pOther, USE_TOGGLE, 0);
+	SetTouch(NULL);
+	UTIL_Remove(this);
+	ALERT(at_notice, "Collected %s %s %f,%f,%f\n", STRING(pev->classname), STRING(pev->netname), pev->absmax.x, pev->absmax.y, pev->absmax.z);
+	return;
+
 	if (MyTouch(pPlayer))
 	{
 		SUB_UseTargets(pOther, USE_TOGGLE, 0);

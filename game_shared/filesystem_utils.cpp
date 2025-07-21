@@ -21,6 +21,10 @@
 #include "Platform.h"
 #include "PlatformHeaders.h"
 
+// [ap]
+#include "archipelago/ap_integration.h"
+#include "archipelago/ap_log.h"
+
 #ifdef WIN32
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -42,6 +46,9 @@
 #include "interface.h"
 
 #include "filesystem_utils.h"
+
+// [ap]
+#include "archipelago/ap_integration.h"
 
 static CSysModule* g_pFileSystemModule = nullptr;
 
@@ -135,6 +142,9 @@ bool FileSystem_LoadFileSystem()
 	// Get filesystem interface.
 	// The library is located next to the game exe, so there is no need to resolve the path first.
 	g_pFileSystemModule = Sys_LoadModule(szFsModule);
+
+	// [ap] Init console for printing here
+	InitializeConsole();
 
 	assert(nullptr != g_pFileSystemModule);
 

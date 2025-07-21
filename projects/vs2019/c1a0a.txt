@@ -1,0 +1,5 @@
+{"id": 1, "name": "Scientist", "classname": "monster_scientist", "uuid": 13005695103758557903},
+{"id": 2, "name": "Scientist", "classname": "monster_scientist", "uuid": 10615995044244627191},
+{"id": 3, "name": "Scientist", "classname": "monster_scientist", "uuid": 9641165332588524161},
+{"id": 4, "name": "Scientist", "classname": "monster_scientist", "uuid": 13387546992549979718},
+{"id": 5, "name": "Barney", "classname": "monster_barney", "uuid": 3368076397790648277},

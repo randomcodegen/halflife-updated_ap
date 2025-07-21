@@ -1569,6 +1569,8 @@ void CHalfLifeMultiplay::ChangeLevel()
 	g_fGameOver = true;
 
 	ALERT(at_console, "CHANGE LEVEL: %s\n", szNextMap);
+	// [ap]
+	printf("MP CHANGE LEVEL: %s\n", szNextMap);
 	if (0 != minplayers || 0 != maxplayers)
 	{
 		ALERT(at_console, "PLAYER COUNT:  min %i max %i current %i\n", minplayers, maxplayers, curplayers);

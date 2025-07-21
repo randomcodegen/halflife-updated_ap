@@ -2521,6 +2521,58 @@ float CBaseMonster::FlYawDiff()
 //=========================================================
 float CBaseMonster::ChangeYaw(int yawSpeed)
 {
+	// [ap] return old fps-locked yaw turning
+	float ideal, current, move, speed;
+
+	current = UTIL_AngleMod(pev->angles.y);
+	ideal = pev->ideal_yaw;
+	if (current != ideal)
+	{
+		speed = (float)yawSpeed * gpGlobals->frametime * 10;
+		move = ideal - current;
+
+		if (ideal > current)
+		{
+			if (move >= 180)
+				move = move - 360;
+		}
+		else
+		{
+			if (move <= -180)
+				move = move + 360;
+		}
+
+		if (move > 0)
+		{ // turning to the monster's left
+			if (move > speed)
+				move = speed;
+		}
+		else
+		{ // turning to the monster's right
+			if (move < -speed)
+				move = -speed;
+		}
+
+		pev->angles.y = UTIL_AngleMod(current + move);
+
+		// turn head in desired direction only if they have a turnable head
+		if (m_afCapability & bits_CAP_TURN_HEAD)
+		{
+			float yaw = pev->ideal_yaw - pev->angles.y;
+			if (yaw > 180)
+				yaw -= 360;
+			if (yaw < -180)
+				yaw += 360;
+			// yaw *= 0.8;
+			SetBoneController(0, yaw);
+		}
+	}
+	else
+		move = 0;
+
+	return move;
+
+	/* 
 	float ideal, current, move, speed;
 
 	current = UTIL_AngleMod(pev->angles.y);
@@ -2582,6 +2634,7 @@ float CBaseMonster::ChangeYaw(int yawSpeed)
 		move = 0;
 
 	return move;
+	*/
 }
 
 //=========================================================
@@ -2628,6 +2681,9 @@ void CBaseMonster::HandleAnimEvent(MonsterEvent_t* pEvent)
 		{
 			pev->deadflag = DEAD_DYING;
 			// Kill me now! (and fade out when CineCleanup() is called)
+			// [ap] cutscene killsanity
+			if (!strcmp(STRING(pev->classname), "monster_scientist"))
+				ALERT(at_notice, "Scientist %s killed.\n", STRING(this->pev->netname));
 #if _DEBUG
 			ALERT(at_aiconsole, "Death event: %s\n", STRING(pev->classname));
 #endif

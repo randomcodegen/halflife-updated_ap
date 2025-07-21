@@ -231,7 +231,7 @@ WEAPON* WeaponsResource::GetNextActivePos(int iSlot, int iSlotPos)
 
 int giBucketHeight, giBucketWidth, giABHeight, giABWidth; // Ammo Bar width and height
 
-HSPRITE ghsprBuckets; // Sprite for top row of weapons menu
+HLSPRITE ghsprBuckets; // Sprite for top row of weapons menu
 
 DECLARE_MESSAGE(m_Ammo, CurWeapon);	 // Current weapon and clip
 DECLARE_MESSAGE(m_Ammo, WeaponList); // new weapon type
@@ -393,7 +393,7 @@ void CHudAmmo::Think()
 // Helper function to return a Ammo pointer from id
 //
 
-HSPRITE* WeaponsResource::GetAmmoPicFromWeapon(int iAmmoId, Rect& rect)
+HLSPRITE* WeaponsResource::GetAmmoPicFromWeapon(int iAmmoId, Rect& rect)
 {
 	for (int i = 0; i < MAX_WEAPONS; i++)
 	{
@@ -561,6 +561,7 @@ bool CHudAmmo::MsgFunc_HideWeapon(const char* pszName, int iSize, void* pbuf)
 //  counts are updated with AmmoX. Server assures that the Weapon ammo type
 //  numbers match a real ammo type.
 //
+extern cvar_t* ap_hud_crosshair;
 bool CHudAmmo::MsgFunc_CurWeapon(const char* pszName, int iSize, void* pbuf)
 {
 	static Rect nullrc;
@@ -612,15 +613,15 @@ bool CHudAmmo::MsgFunc_CurWeapon(const char* pszName, int iSize, void* pbuf)
 		return true;
 
 	m_pWeapon = pWeapon;
-
-	if (gHUD.m_iFOV >= 90)
+	// [ap]
+	if (gHUD.m_iFOV >= 90 && !(ap_hud_crosshair->value == 1))
 	{ // normal crosshairs
 		if (fOnTarget && 0 != m_pWeapon->hAutoaim)
 			SetCrosshair(m_pWeapon->hAutoaim, m_pWeapon->rcAutoaim, 255, 255, 255);
 		else
 			SetCrosshair(m_pWeapon->hCrosshair, m_pWeapon->rcCrosshair, 255, 255, 255);
 	}
-	else
+	else if (!(ap_hud_crosshair->value == 1))
 	{ // zoomed crosshairs
 		if (fOnTarget && 0 != m_pWeapon->hZoomedAutoaim)
 			SetCrosshair(m_pWeapon->hZoomedAutoaim, m_pWeapon->rcZoomedAutoaim, 255, 255, 255);

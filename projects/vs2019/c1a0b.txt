@@ -1,0 +1,8 @@
+{"id": 1, "name": "Scientist", "classname": "monster_scientist", "uuid": 6148523576809442324},
+{"id": 2, "name": "Scientist", "classname": "monster_scientist", "uuid": 2123096379962252562},
+{"id": 3, "name": "Scientist", "classname": "monster_scientist", "uuid": 4059810812127061370},
+{"id": 4, "name": "Scientist", "classname": "monster_scientist", "uuid": 2504116431597919222},
+{"id": 5, "name": "Scientist", "classname": "monster_scientist", "uuid": 14597312284650693964},
+{"id": 6, "name": "Sitting_scientist", "classname": "monster_sitting_scientist", "uuid": 9650348071434255380},
+{"id": 7, "name": "Scientist", "classname": "monster_scientist", "uuid": 16487395096302722257},
+{"id": 8, "name": "Scientist", "classname": "monster_scientist", "uuid": 18030667347908388520},

@@ -369,6 +369,15 @@
     <ClCompile Include="..\..\public\interface.cpp">
       <Filter>Source Files\public</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\public\archipelago\ap_lib.cpp">
+      <Filter>Source Files\public</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\public\archipelago\ap_log.cpp">
+      <Filter>Source Files\public</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\public\archipelago\ap_integration.cpp">
+      <Filter>Source Files\public</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\dlls\doors.h">
@@ -621,6 +630,15 @@
       <Filter>Header Files\game_shared</Filter>
     </ClInclude>
     <ClInclude Include="..\..\public\interface.h">
+      <Filter>Header Files\public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\public\archipelago\ap_log.h">
+      <Filter>Header Files\public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\public\archipelago\ap_integration.h">
+      <Filter>Header Files\public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\public\archipelago\ap_lib.h">
       <Filter>Header Files\public</Filter>
     </ClInclude>
   </ItemGroup>

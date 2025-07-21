@@ -20,6 +20,8 @@
 
 #include "vgui_TeamFortressViewport.h"
 #include "filesystem_utils.h"
+// [ap]
+#include "ap_hud.h"
 
 
 extern bool g_iAlive;
@@ -287,6 +289,8 @@ void KB_Shutdown()
 KeyDown
 ============
 */
+#include <imgui_impl_win32.h>
+#include "ap_hud.h"
 void KeyDown(kbutton_t* b)
 {
 	int k;
@@ -297,6 +301,18 @@ void KeyDown(kbutton_t* b)
 		k = atoi(c);
 	else
 		k = -1; // typed manually at the console for continuous down
+	if (menuOpen)
+	{
+		if (k == 240)
+		{
+			ImGui::GetIO().MouseWheel += 1.0f;
+		}
+		else if (k == 239)
+		{
+			ImGui::GetIO().MouseWheel -= 1.0f;
+		}
+	}
+
 
 	if (k == b->down[0] || k == b->down[1])
 		return; // repeating key
@@ -779,7 +795,9 @@ Set bResetState to 1 to clear old state info
 int CL_ButtonBits(bool bResetState)
 {
 	int bits = 0;
-
+	// [ap] block input polling if menu is open
+	if (menuOpen)
+		return 0;
 	if ((in_attack.state & 3) != 0)
 	{
 		bits |= IN_ATTACK;

@@ -22,6 +22,22 @@
 //
 #include "activity.h"
 #include "enginecallback.h"
+#include "eiface.h"
+
+#ifdef CLIENT_DLL // Or whatever client-side macro your project uses
+
+// On client: declare a stub so the linker is happy
+void MyAlertMessage(ALERT_TYPE level, const char* pszFmt, ...);
+
+#else
+
+// On server: declare the real wrapper
+void MyAlertMessage(ALERT_TYPE level, const char* pszFmt, ...);
+
+#undef ALERT
+#define ALERT MyAlertMessage
+
+#endif
 
 class CBaseEntity;
 

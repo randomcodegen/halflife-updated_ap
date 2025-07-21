@@ -21,14 +21,14 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>NotSet</CharacterSet>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>NotSet</CharacterSet>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -56,14 +56,13 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;_DEBUG;_WINDOWS;QUIVER;VOXEL;QUAKE2;VALVE_DLL;CLIENT_WEAPONS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <AdditionalIncludeDirectories>..\..\dlls;..\..\engine;..\..\common;..\..\pm_shared;..\..\game_shared;..\..\public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <AdditionalIncludeDirectories>C:\Users\Rando\Documents\projects\halflife-updated_ap\APCpp;..\..\dlls;..\..\engine;..\..\common;..\..\pm_shared;..\..\game_shared;..\..\public;..\..\public\archipelago;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <AdditionalOptions>/Zc:threadSafeInit- %(AdditionalOptions)</AdditionalOptions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpp17</LanguageStandard>
@@ -72,6 +71,8 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>$(ProjectDir)..\..\dlls\hl.def</ModuleDefinitionFile>
+      <AdditionalDependencies>APCppDLL.lib;Bcrypt.lib;Crypt32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Users\Rando\Documents\projects\halflife-updated_ap\APCpp;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>cmd /c ""$(ProjectDir)..\..\filecopy.bat" "$(OutDir)" "dlls" "$(TargetFileName)""
@@ -219,6 +220,9 @@ cmd /c ""$(ProjectDir)..\..\filecopy.bat" "$(SolutionDir)../../network" "" "delt
     <ClCompile Include="..\..\pm_shared\pm_debug.cpp" />
     <ClCompile Include="..\..\pm_shared\pm_math.cpp" />
     <ClCompile Include="..\..\pm_shared\pm_shared.cpp" />
+    <ClCompile Include="..\..\public\archipelago\ap_integration.cpp" />
+    <ClCompile Include="..\..\public\archipelago\ap_lib.cpp" />
+    <ClCompile Include="..\..\public\archipelago\ap_log.cpp" />
     <ClCompile Include="..\..\public\interface.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -305,6 +309,9 @@ cmd /c ""$(ProjectDir)..\..\filecopy.bat" "$(SolutionDir)../../network" "" "delt
     <ClInclude Include="..\..\pm_shared\pm_materials.h" />
     <ClInclude Include="..\..\pm_shared\pm_movevars.h" />
     <ClInclude Include="..\..\pm_shared\pm_shared.h" />
+    <ClInclude Include="..\..\public\archipelago\ap_integration.h" />
+    <ClInclude Include="..\..\public\archipelago\ap_lib.h" />
+    <ClInclude Include="..\..\public\archipelago\ap_log.h" />
     <ClInclude Include="..\..\public\interface.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

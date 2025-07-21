@@ -55,4 +55,8 @@ inline int gmsgStatusValue = 0;
 
 inline int gmsgWeapons = 0;
 
+// [ap]
+inline int gmsg_MultiLineNotify = 0;
+inline int gmsg_TrigInfo = 0;
+
 void LinkUserMessages();

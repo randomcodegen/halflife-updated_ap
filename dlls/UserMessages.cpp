@@ -65,4 +65,8 @@ void LinkUserMessages()
 	gmsgStatusValue = REG_USER_MSG("StatusValue", 3);
 
 	gmsgWeapons = REG_USER_MSG("Weapons", 8);
+
+	// [ap]
+	gmsg_MultiLineNotify = REG_USER_MSG("MLNotify", -1);
+	gmsg_TrigInfo = REG_USER_MSG("TrigInfo", -1);
 }

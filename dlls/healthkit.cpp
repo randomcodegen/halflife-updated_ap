@@ -21,6 +21,8 @@
 #include "items.h"
 #include "gamerules.h"
 #include "UserMessages.h"
+// [ap]
+#include "ap_integration.h"
 
 class CHealthKit : public CItem
 {
@@ -166,6 +168,8 @@ void CWallHealth::Spawn()
 	SET_MODEL(ENT(pev), STRING(pev->model));
 	m_iJuice = gSkillData.healthchargerCapacity;
 	pev->frame = 0;
+	// [ap]
+	pev->body = 249;
 }
 
 void CWallHealth::Precache()
@@ -184,6 +188,10 @@ void CWallHealth::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE us
 	// if it's not a player, ignore
 	if (!pActivator->IsPlayer())
 		return;
+	
+	ALERT(at_notice, "HealthUse: %s\n", STRING(this->pev->netname));
+	if (!ap_can_use())
+		return;
 
 	auto player = static_cast<CBasePlayer*>(pActivator);
 
@@ -195,7 +203,9 @@ void CWallHealth::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE us
 	}
 
 	// if the player doesn't have the suit, or there is no juice left, make the deny noise
-	if ((m_iJuice <= 0) || !player->HasSuit())
+	// [ap] skip checking for suit to always allow heal
+	//if ((m_iJuice <= 0) || !player->HasSuit())
+	if ((m_iJuice <= 0))
 	{
 		if (m_flSoundTime <= gpGlobals->time)
 		{

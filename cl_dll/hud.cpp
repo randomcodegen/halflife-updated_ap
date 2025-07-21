@@ -30,6 +30,10 @@
 #include "demo_api.h"
 #include "vgui_ScorePanel.h"
 
+// [ap]
+#include "UserMessages.h"
+#include "ap_hud.h"
+
 hud_player_info_t g_PlayerInfoList[MAX_PLAYERS_HUD + 1];	// player info from the engine
 extra_player_info_t g_PlayerExtraInfo[MAX_PLAYERS_HUD + 1]; // additional player info sent directly to the client dll
 
@@ -86,6 +90,10 @@ cvar_t* cl_rollangle = nullptr;
 cvar_t* cl_rollspeed = nullptr;
 cvar_t* cl_bobtilt = nullptr;
 cvar_t* r_decals = nullptr;
+// [ap]
+cvar_t* ap_hud_speedometer = nullptr;
+cvar_t* ap_hud_draw_triggers = nullptr;
+cvar_t* ap_hud_crosshair = nullptr;
 
 void ShutdownInput();
 
@@ -280,6 +288,56 @@ int __MsgFunc_AllowSpec(const char* pszName, int iSize, void* pbuf)
 	return 0;
 }
 
+enum ClientAlertLevel
+{
+	ALERT_NOTICE = 0,
+	ALERT_CONSOLE = 1,
+	ALERT_AICONSOLE = 2,
+	ALERT_WARNING = 3,
+	ALERT_ERROR = 4,
+	ALERT_LOGGED = 5
+};
+
+// [ap]
+std::vector<TriggerZone> g_TriggerZones;
+
+int __MsgFunc_TrigInfo(const char* name, int size, void* buf)
+{
+	BEGIN_READ(buf, size);
+	TriggerZone zone;
+	zone.origin.x = READ_COORD();
+	zone.origin.y = READ_COORD();
+	zone.origin.z = READ_COORD();
+	zone.mins.x = READ_COORD();
+	zone.mins.y = READ_COORD();
+	zone.mins.z = READ_COORD();
+	zone.maxs.x = READ_COORD();
+	zone.maxs.y = READ_COORD();
+	zone.maxs.z = READ_COORD();
+	zone.classname = READ_STRING();
+
+	g_TriggerZones.push_back(zone);
+
+	return 1;
+}
+
+int __MsgFunc_MLNotify(const char* pszName, int iSize, void* pbuf)
+{
+	BEGIN_READ(pbuf, iSize);
+	int level = READ_BYTE(); // Read alert level sent from server
+	const char* pszMessage = READ_STRING();
+	if (level <= CVAR_GET_FLOAT("developer"))
+	{
+		gHUD.m_MultiNotify->AddMessage(pszMessage);
+
+		// also print to ap console if we are debugging
+		if (_DEBUG)
+			printf(pszMessage);
+	}
+	
+	return 0;
+}
+
 // This is called every time the DLL is loaded
 void CHud::Init()
 {
@@ -319,6 +377,10 @@ void CHud::Init()
 	// VGUI Menus
 	HOOK_MESSAGE(VGUIMenu);
 
+	// [ap]
+	HOOK_MESSAGE(MLNotify);
+	HOOK_MESSAGE(TrigInfo);
+
 	CVAR_CREATE("hud_classautokill", "1", FCVAR_ARCHIVE | FCVAR_USERINFO); // controls whether or not to suicide immediately on TF class switch
 	CVAR_CREATE("hud_takesshots", "0", FCVAR_ARCHIVE);					   // controls whether or not to automatically take screenshots at the end of a round
 
@@ -336,6 +398,11 @@ void CHud::Init()
 	cl_rollspeed = CVAR_CREATE("cl_rollspeed", "200", FCVAR_ARCHIVE);
 	cl_bobtilt = CVAR_CREATE("cl_bobtilt", "0", FCVAR_ARCHIVE);
 	r_decals = gEngfuncs.pfnGetCvarPointer("r_decals");
+
+	// [ap]
+	ap_hud_speedometer = CVAR_CREATE("ap_hud_speedometer", "1", FCVAR_CLIENTDLL);
+	ap_hud_draw_triggers = gEngfuncs.pfnRegisterVariable("ap_hud_draw_triggers", "0", FCVAR_ARCHIVE);
+	ap_hud_crosshair = CVAR_CREATE("ap_hud_crosshair", "1", FCVAR_ARCHIVE);
 
 	m_pSpriteList = NULL;
 
@@ -369,6 +436,14 @@ void CHud::Init()
 	m_AmmoSecondary.Init();
 	m_TextMessage.Init();
 	m_StatusIcons.Init();
+	// [ap]
+	m_APText = new CHudAPText();
+	m_APText->Init();
+	m_MultiNotify = new CHudMultiNotify();
+	m_MultiNotify->Init();
+	m_Speedometer = new CHudSpeedometer();
+	m_Speedometer->Init();
+
 	GetClientVoiceMgr()->Init(&g_VoiceStatusHelper, (vgui::Panel**)&gViewPort);
 
 	m_Menu.Init();
@@ -460,7 +535,7 @@ void CHud::VidInit()
 			}
 
 			// allocated memory for sprite handle arrays
-			m_rghSprites = new HSPRITE[m_iSpriteCount];
+			m_rghSprites = new HLSPRITE[m_iSpriteCount];
 			m_rgrcRects = new Rect[m_iSpriteCount];
 			m_rgszSpriteNames = new char[m_iSpriteCount * MAX_SPRITE_NAME_LENGTH];
 
@@ -523,6 +598,11 @@ void CHud::VidInit()
 	m_AmmoSecondary.VidInit();
 	m_TextMessage.VidInit();
 	m_StatusIcons.VidInit();
+	// [ap]
+	m_APText->VidInit();
+	m_Speedometer->VidInit();
+	m_MultiNotify->VidInit();
+	
 	GetClientVoiceMgr()->VidInit();
 }
 

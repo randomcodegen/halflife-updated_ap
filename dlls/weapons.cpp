@@ -556,6 +556,16 @@ void CBasePlayerItem::DefaultTouch(CBaseEntity* pOther)
 
 	CBasePlayer* pPlayer = (CBasePlayer*)pOther;
 
+	// [ap] just fire subs and leave
+	// exception for impulse cheat
+	if (!gEvilImpulse101) {
+		SUB_UseTargets(pOther, USE_TOGGLE, 0);
+		SetTouch(NULL);
+		UTIL_Remove(this);
+		ALERT(at_notice, "Collected %s %s %f,%f,%f\n", STRING(pev->classname), STRING(pev->netname), pev->absmax.x, pev->absmax.y, pev->absmax.z);
+		return;
+	}
+
 	// can I have this?
 	if (!g_pGameRules->CanHavePlayerItem(pPlayer, this))
 	{
@@ -922,6 +932,18 @@ void CBasePlayerAmmo::DefaultTouch(CBaseEntity* pOther)
 {
 	if (!pOther->IsPlayer())
 	{
+		return;
+	}
+
+	// [ap] just fire subs and leave
+	// exception for impulse cheat
+	if (!gEvilImpulse101)
+	{
+		SUB_UseTargets(pOther, USE_TOGGLE, 0);
+		SetTouch(NULL);
+		SetThink(&CBasePlayerAmmo::SUB_Remove);
+		pev->nextthink = gpGlobals->time + .1;
+		ALERT(at_notice, "Collected %s %s %f,%f,%f\n", STRING(pev->classname), STRING(pev->netname), pev->absmax.x, pev->absmax.y, pev->absmax.z);
 		return;
 	}
 

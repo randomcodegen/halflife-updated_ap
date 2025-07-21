@@ -321,6 +321,18 @@
     <ClCompile Include="..\..\cl_dll\particleman\CBaseParticle.cpp">
       <Filter>Source Files\cl_dll\particleman</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\public\archipelago\ap_log.cpp">
+      <Filter>Source Files\public</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\public\archipelago\ap_integration.cpp">
+      <Filter>Source Files\public</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\public\archipelago\ap_lib.cpp">
+      <Filter>Source Files\public</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\public\archipelago\ap_hud.cpp">
+      <Filter>Source Files\public</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\cl_dll\kbutton.h">
@@ -595,6 +607,18 @@
     </ClInclude>
     <ClInclude Include="..\..\cl_dll\particleman\CBaseParticle.h">
       <Filter>Header Files\cl_dll\particleman</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\public\archipelago\ap_log.h">
+      <Filter>Header Files\public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\public\archipelago\ap_integration.h">
+      <Filter>Header Files\public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\public\archipelago\ap_lib.h">
+      <Filter>Header Files\public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\public\archipelago\ap_hud.h">
+      <Filter>Header Files\public</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -27,6 +27,8 @@
 #include "saverestore.h"
 #include "trains.h" // trigger_camera has train functionality
 #include "gamerules.h"
+// [ap]
+#include "ap_integration.h"
 
 #define SF_TRIGGER_PUSH_START_OFF 2		   //spawnflag that makes trigger_push spawn turned OFF
 #define SF_TRIGGER_HURT_TARGETONCE 1	   // Only fire hurt target once
@@ -243,6 +245,10 @@ void CTriggerRelay::Spawn()
 
 void CTriggerRelay::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value)
 {
+	// TODO: [ap] check: This might only be cutscene triggers?
+	//if (pActivator && !FClassnameIs(pActivator->pev, "player"))
+		//return;
+
 	SUB_UseTargets(this, triggerType, 0);
 	if ((pev->spawnflags & SF_RELAY_FIREONCE) != 0)
 		UTIL_Remove(this);
@@ -1128,6 +1134,10 @@ void CBaseTrigger::MultiTouch(CBaseEntity* pOther)
 
 	pevToucher = pOther->pev;
 
+	// [ap] TODO: ap_candoor here, maybe other things
+	if (FClassnameIs(pOther->pev, "player") && !ap_can_door())
+		return;
+
 	// Only touch clients, monsters, or pushables (depending on flags)
 	if (((pevToucher->flags & FL_CLIENT) != 0 && (pev->spawnflags & SF_TRIGGER_NOCLIENTS) == 0) ||
 		((pevToucher->flags & FL_MONSTER) != 0 && (pev->spawnflags & SF_TRIGGER_ALLOWMONSTERS) != 0) ||
@@ -1491,6 +1501,8 @@ void CChangeLevel::ChangeLevelNow(CBaseEntity* pActivator)
 	LEVELLIST levels[16];
 
 	ASSERT(!FStrEq(m_szMapName, ""));
+	// [ap]
+	printf("Changelevel to %s\n", m_szMapName);
 
 	// Don't work in deathmatch
 	if (g_pGameRules->IsDeathmatch())
@@ -1550,7 +1562,7 @@ void CChangeLevel::TouchChangeLevel(CBaseEntity* pOther)
 {
 	if (!FClassnameIs(pOther->pev, "player"))
 		return;
-
+	// [ap] TODO: Change this to go back to menu
 	ChangeLevelNow(pOther);
 }
 

@@ -1,0 +1,3 @@
+{"id": 1, "name": "Human_grunt", "classname": "monster_human_grunt", "uuid": 18104790240237638141},
+{"id": 2, "name": "Human_grunt", "classname": "monster_human_grunt", "uuid": 2639948514126213190},
+{"id": 3, "name": "Osprey", "classname": "monster_osprey", "uuid": 2161145182702253227},

@@ -1,0 +1,1 @@
+{"id": 1, "name": "Generic", "classname": "monster_generic", "uuid": 3134889812706222447},

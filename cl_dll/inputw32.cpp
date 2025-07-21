@@ -32,6 +32,9 @@
 #include <SDL2/SDL_mouse.h>
 #include <SDL2/SDL_gamecontroller.h>
 
+// [ap]
+#include "ap_hud.h"
+
 void IN_ResetMouse();
 
 #define MOUSE_BUTTON_COUNT 5
@@ -76,8 +79,11 @@ static SDL_bool mouseRelative = SDL_TRUE;
 
 static void IN_SetMouseRelative(bool enable)
 {
+	if (menuOpen) {
+		SDL_SetRelativeMouseMode(SDL_FALSE);
+		return;
+	}
 	const SDL_bool value = enable ? SDL_TRUE : SDL_FALSE;
-
 	SDL_SetRelativeMouseMode(value);
 	mouseRelative = value;
 }
@@ -535,7 +541,8 @@ void IN_MouseMove(float frametime, usercmd_t* cmd)
 
 	//jjb - this disbles normal mouse control if the user is trying to
 	//      move the camera, or if the mouse cursor is visible or if we're in intermission
-	if (!iMouseInUse && !gHUD.m_iIntermission && !g_iVisibleMouse)
+	// [ap]
+	if (!iMouseInUse && !gHUD.m_iIntermission && !g_iVisibleMouse && !menuOpen)
 	{
 		int deltaX, deltaY;
 #ifdef WIN32
@@ -662,6 +669,9 @@ IN_Accumulate
 */
 void DLLEXPORT IN_Accumulate()
 {
+	// [ap] dont accumlate the mouse if menu is active
+	if (menuOpen)
+		return;
 	//only accumulate mouse if we are not moving the camera with the mouse
 	if (!iMouseInUse && !g_iVisibleMouse)
 	{

@@ -48,6 +48,10 @@
 #include "pm_defs.h"
 #include "UserMessages.h"
 
+// [ap]
+#include "ap_integration.h"
+#include "UserMessages.h"
+
 DLL_GLOBAL unsigned int g_ulFrameCount;
 
 extern void CopyToBodyQue(entvars_t* pev);
@@ -188,6 +192,61 @@ void ClientKill(edict_t* pEntity)
 	//	pev->modelindex = g_ulModelIndexPlayer;
 	//	pev->frags -= 2;		// extra penalty
 	//	respawn( pev );
+}
+
+// [ap] send all triggers to client for caching
+#define MAX_TRIGGERS_PER_BATCH 16
+
+struct TriggerBatchState
+{
+	int currentIndex;
+	bool active;
+};
+
+TriggerBatchState g_TriggerBatch = {0, false};
+
+void SendAllTriggersToClient()
+{
+	if (!g_TriggerBatch.active)
+		return;
+	int sent = 0;
+	for (int i = g_TriggerBatch.currentIndex; i < gpGlobals->maxEntities && sent < MAX_TRIGGERS_PER_BATCH; i++)
+	{
+		edict_t* pEnt = INDEXENT(i);
+		if (!pEnt || pEnt->free)
+			continue;
+
+		if (!strncmp(STRING(pEnt->v.classname), "trigger", 7))
+		{
+
+			MESSAGE_BEGIN(MSG_ALL, gmsg_TrigInfo, NULL);
+			Vector origin = pEnt->v.origin;
+			Vector mins = pEnt->v.mins;
+			Vector maxs = pEnt->v.maxs;
+			WRITE_COORD(origin.x);
+			WRITE_COORD(origin.y);
+			WRITE_COORD(origin.z);
+			WRITE_COORD(mins.x);
+			WRITE_COORD(mins.y);
+			WRITE_COORD(mins.z);
+			WRITE_COORD(maxs.x);
+			WRITE_COORD(maxs.y);
+			WRITE_COORD(maxs.z);
+			WRITE_STRING(STRING(pEnt->v.classname));
+			MESSAGE_END();
+
+			sent++;
+		}
+
+		g_TriggerBatch.currentIndex = i + 1;
+	}
+
+	if (g_TriggerBatch.currentIndex >= gpGlobals->maxEntities)
+	{
+		// Done sending
+		g_TriggerBatch.active = false;
+		g_TriggerBatch.currentIndex = 0;
+	}
 }
 
 /*
@@ -629,6 +688,7 @@ it gets sent into the rest of the engine.
 */
 void ClientUserInfoChanged(edict_t* pEntity, char* infobuffer)
 {
+	g_bMapLoaded = false;
 	// Is the client spawned yet?
 	if (!pEntity->pvPrivateData)
 		return;
@@ -684,6 +744,10 @@ void ClientUserInfoChanged(edict_t* pEntity, char* infobuffer)
 	}
 
 	g_pGameRules->ClientUserInfoChanged(GetClassPtr((CBasePlayer*)&pEntity->v), infobuffer);
+
+	// [ap] Start a new trigger batch for this client
+	g_TriggerBatch.currentIndex = 0;
+	g_TriggerBatch.active = true;
 }
 
 static int g_serveractive = 0;
@@ -702,16 +766,32 @@ void ServerDeactivate()
 	// Peform any shutdown operations here...
 	//
 }
-
+bool g_bMapLoaded = false;
 void ServerActivate(edict_t* pEdictList, int edictCount, int clientMax)
 {
 	int i;
 	CBaseEntity* pClass;
-
-	// Every call to ServerActivate should be matched by a call to ServerDeactivate
 	g_serveractive = 1;
 
-	// Clients have not been initialized yet
+	// [ap]
+	int ap_id = 1;
+	FILE* fp = nullptr;
+
+	if (AP_DUMP_EDICT)
+	{
+		const char* mapname = STRING(gpGlobals->mapname);
+
+		// Save directly to ./mapname.txt
+		char filepath[128];
+		snprintf(filepath, sizeof(filepath), "%s.txt", mapname);
+
+		fp = fopen(filepath, "w");
+		if (!fp)
+		{
+			ALERT(at_error, "Failed to open dump file: %s\n", filepath);
+		}
+	}
+
 	for (i = 0; i < edictCount; i++)
 	{
 		if (0 != pEdictList[i].free)
@@ -731,9 +811,33 @@ void ServerActivate(edict_t* pEdictList, int edictCount, int clientMax)
 		{
 			ALERT(at_console, "Can't instance %s\n", STRING(pEdictList[i].v.classname));
 		}
+
+		const char* classname = STRING(pEdictList[i].v.classname);
+		const char* netname = STRING(pEdictList[i].v.netname);
+		printf("Spawning %s\n", classname);
+		if (AP_DUMP_EDICT && fp && pClass && ((strcmp(netname, "") && !strcmp(classname, "func_breakable")) || (strchr(classname, '_') && (strncmp(classname, "item_", 5) == 0 || strncmp(classname, "ammo_", 5) == 0 || strncmp(classname, "weapon_", 7) == 0 || strncmp(classname, "monster_", 8) == 0))))
+		{
+			// Get the part after the prefix
+			const char* underscore = strchr(classname, '_');
+			const char* stripped = underscore ? underscore + 1 : classname;
+
+			char nameBuffer[128] = {0};
+			strncpy(nameBuffer, stripped, sizeof(nameBuffer) - 1);
+
+			// Capitalize the first letter
+			if (nameBuffer[0] >= 'a' && nameBuffer[0] <= 'z')
+				nameBuffer[0] = nameBuffer[0] - 'a' + 'A';
+
+			fprintf(fp, "{\"id\": %i, \"name\": \"%s\", \"classname\": \"%s\", \"uuid\": %s},\n",
+				ap_id, nameBuffer, STRING(pClass->pev->classname), STRING(pClass->pev->netname));
+
+			ap_id += 1;
+		}
 	}
 
-	// Link user messages here to make sure first client can get them...
+	if (fp)
+		fclose(fp);
+
 	LinkUserMessages();
 }
 
@@ -754,6 +858,27 @@ void PlayerPreThink(edict_t* pEntity)
 		pPlayer->PreThink();
 }
 
+// [ap]
+#define MAX_MESSAGES_PER_FRAME 5
+std::queue<PendingMessage> g_MessageQueue;
+void ProcessPendingMessages()
+{
+	int sentCount = 0;
+
+	while (!g_MessageQueue.empty() && sentCount < MAX_MESSAGES_PER_FRAME)
+	{
+		const PendingMessage& msg = g_MessageQueue.front();
+
+		MESSAGE_BEGIN(MSG_BROADCAST, gmsg_MultiLineNotify);
+		WRITE_BYTE(msg.level);
+		WRITE_STRING(msg.text.c_str());
+		MESSAGE_END();
+
+		g_MessageQueue.pop();
+		sentCount++;
+	}
+}
+
 /*
 ================
 PlayerPostThink
@@ -768,6 +893,11 @@ void PlayerPostThink(edict_t* pEntity)
 
 	if (pPlayer)
 		pPlayer->PostThink();
+	if (g_TriggerBatch.active)
+		SendAllTriggersToClient();
+	if (g_bMapLoaded)
+		ProcessPendingMessages();
+	g_bMapLoaded = true;
 }
 
 
@@ -1186,8 +1316,9 @@ void SetupVisibility(edict_t* pViewEntity, edict_t* pClient, unsigned char** pvs
 	{
 		pView = pViewEntity;
 	}
-
-	if ((pClient->v.flags & FL_PROXY) != 0)
+	// TODO: [ap] disable visibility checks if automap is active
+	// for now its always off
+	if ( true || (pClient->v.flags & FL_PROXY) != 0)
 	{
 		*pvs = NULL; // the spectator proxy sees
 		*pas = NULL; // and hears everything
@@ -1234,19 +1365,32 @@ int AddToFullPack(struct entity_state_s* state, int e, edict_t* ent, edict_t* ho
 
 	auto entity = reinterpret_cast<CBaseEntity*>(GET_PRIVATE(ent));
 
-	// don't send if flagged for NODRAW and it's not the host getting the message
-	if ((ent->v.effects & EF_NODRAW) != 0 &&
-		(ent != host))
-		return 0;
+	// [ap]send breakables over network
+	bool isBreakable = (ent->v.body == 250);
 
-	// Ignore ents without valid / visible models
-	if (0 == ent->v.modelindex || !STRING(ent->v.model))
-		return 0;
-
-	// Don't send spectators to other players
-	if ((ent->v.flags & FL_SPECTATOR) != 0 && (ent != host))
+	// Always send triggers, even without a model
+	if (isBreakable)
 	{
-		return 0;
+		// Bypass the usual checks and force them to be included
+	}
+	else
+	{
+		if ((ent->v.modelindex == 0 || !STRING(ent->v.model)))
+			return 0;
+
+		// don't send if flagged for NODRAW and it's not the host getting the message,
+		if ((ent->v.effects & EF_NODRAW) != 0 && (ent != host))
+			return 0;
+
+		// Ignore ents without valid / visible models
+		if (0 == ent->v.modelindex || !STRING(ent->v.model))
+			return 0;
+
+		// Don't send spectators to other players
+		if ((ent->v.flags & FL_SPECTATOR) != 0 && (ent != host))
+		{
+			return 0;
+		}
 	}
 
 	// Ignore if not the host and not touching a PVS/PAS leaf
@@ -1348,8 +1492,8 @@ int AddToFullPack(struct entity_state_s* state, int e, edict_t* ent, edict_t* ho
 	{
 		state->eflags &= ~EFLAG_SLERP;
 	}
-
-	state->eflags |= entity->m_EFlags;
+	// [ap] ensure entity exists
+	if (entity) state->eflags |= entity->m_EFlags;
 
 	state->scale = ent->v.scale;
 	state->solid = ent->v.solid;

@@ -1,0 +1,5 @@
+{"id": 1, "name": "Hevsuit_dead", "classname": "monster_hevsuit_dead", "uuid": 14939369366300322929},
+{"id": 2, "name": "Healthkit", "classname": "item_healthkit", "uuid": 6699762797186933131},
+{"id": 3, "name": "Hevsuit_dead", "classname": "monster_hevsuit_dead", "uuid": 15222361493812445903},
+{"id": 4, "name": "Battery", "classname": "item_battery", "uuid": 13966721331223998143},
+{"id": 5, "name": "Healthkit", "classname": "item_healthkit", "uuid": 5658750237245693989},

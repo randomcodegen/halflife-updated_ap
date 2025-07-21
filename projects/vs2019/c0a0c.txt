@@ -1,0 +1,2 @@
+{"id": 1, "name": "Scientist", "classname": "monster_scientist", "uuid": 17569961391362244674},
+{"id": 2, "name": "Generic", "classname": "monster_generic", "uuid": 12225153872661889323},

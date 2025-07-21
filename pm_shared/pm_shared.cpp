@@ -2643,7 +2643,8 @@ void PM_Jump()
 	// In the air now.
 	pmove->onground = -1;
 
-	PM_PreventMegaBunnyJumping();
+	// [ap] remove 
+	//PM_PreventMegaBunnyJumping();
 
 	// Don't play jump sounds while frozen.
 	if ((pmove->flags & FL_FROZEN) == 0)
@@ -2948,7 +2949,7 @@ void PM_CheckParamters()
 	{
 		pmove->maxspeed *= 1.0f / 3.0f;
 	}
-
+	
 	if ((spd != 0.0) &&
 		(spd > pmove->maxspeed))
 	{

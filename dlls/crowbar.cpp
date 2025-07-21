@@ -237,8 +237,8 @@ bool CCrowbar::Swing(bool fFirst)
 		ApplyMultiDamage(m_pPlayer->pev, m_pPlayer->pev);
 
 #endif
-
-		m_flNextPrimaryAttack = GetNextAttackDelay(0.25);
+		// [ap] bring back chainsaw crowbar
+		//m_flNextPrimaryAttack = GetNextAttackDelay(0.25);
 
 #ifndef CLIENT_DLL
 		// play thwack, smack, or dong sound
@@ -304,6 +304,8 @@ bool CCrowbar::Swing(bool fFirst)
 
 		m_pPlayer->m_iWeaponVolume = flVol * CROWBAR_WALLHIT_VOLUME;
 #endif
+		// [ap] bring back chainsaw crowbar
+		m_flNextPrimaryAttack = GetNextAttackDelay(0.25);
 		SetThink(&CCrowbar::Smack);
 		pev->nextthink = gpGlobals->time + 0.2;
 	}

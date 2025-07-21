@@ -45,7 +45,20 @@ cvar_t allow_spectators = {"allow_spectators", "0.0", FCVAR_SERVER}; // 0 preven
 
 cvar_t mp_chattime = {"mp_chattime", "10", FCVAR_SERVER};
 
-cvar_t sv_allowbunnyhopping = {"sv_allowbunnyhopping", "0", FCVAR_SERVER};
+// [ap] allow bhop by default
+cvar_t sv_allowbunnyhopping = {"sv_allowbunnyhopping", "1", FCVAR_SERVER};
+
+// [ap]
+#ifdef _DEBUG
+cvar_t ap_jump = {"ap_jump", "1"};
+cvar_t ap_crouch = {"ap_crouch", "1"};
+cvar_t ap_door = {"ap_door", "1"};
+cvar_t ap_use = {"ap_use", "1"};
+cvar_t ap_dive = {"ap_dive", "1"};
+cvar_t ap_break = {"ap_break", "1"};
+cvar_t ap_grab = {"ap_grab", "1"};
+cvar_t ap_run = {"ap_run", "1"};
+#endif // _DEBUG
 
 //CVARS FOR SKILL LEVEL SETTINGS
 // Agrunt
@@ -522,6 +535,20 @@ void GameDLLInit()
 	CVAR_REGISTER(&sv_busters);
 
 	CVAR_REGISTER(&sv_allowbunnyhopping);
+
+	// [ap] register cvars
+
+#if _DEBUG
+	CVAR_REGISTER(&ap_jump);
+	CVAR_REGISTER(&ap_crouch);
+	CVAR_REGISTER(&ap_door);
+	CVAR_REGISTER(&ap_use);
+	CVAR_REGISTER(&ap_break);
+	CVAR_REGISTER(&ap_grab);
+	CVAR_REGISTER(&ap_dive);
+	CVAR_REGISTER(&ap_run);
+#endif
+
 
 	// REGISTER CVARS FOR SKILL LEVEL STUFF
 	// Agrunt

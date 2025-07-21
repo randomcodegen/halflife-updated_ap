@@ -1,0 +1,8 @@
+{"id": 1, "name": "Breakable", "classname": "func_breakable", "uuid": 11642826426034777691},
+{"id": 2, "name": "Barney", "classname": "monster_barney", "uuid": 10624395796991130167},
+{"id": 3, "name": "Shotgun", "classname": "weapon_shotgun", "uuid": 5449720599462788943},
+{"id": 4, "name": "Tripmine", "classname": "monster_tripmine", "uuid": 4731293861367393826},
+{"id": 5, "name": "Tripmine", "classname": "monster_tripmine", "uuid": 10549214828324016420},
+{"id": 6, "name": "Scientist", "classname": "monster_scientist", "uuid": 476996108999674265},
+{"id": 7, "name": "Tripmine", "classname": "monster_tripmine", "uuid": 18027824689750570348},
+{"id": 8, "name": "Tripmine", "classname": "monster_tripmine", "uuid": 489532442653471275},

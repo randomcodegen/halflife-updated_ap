@@ -1,0 +1,1 @@
+{"id": 1, "name": "Scientist_dead", "classname": "monster_scientist_dead", "uuid": 17238270434590973259},

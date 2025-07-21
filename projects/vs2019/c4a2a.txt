@@ -1,0 +1,3 @@
+{"id": 1, "name": "Hevsuit_dead", "classname": "monster_hevsuit_dead", "uuid": 15094654252736317490},
+{"id": 2, "name": "Battery", "classname": "item_battery", "uuid": 17724384116336057790},
+{"id": 3, "name": "Battery", "classname": "item_battery", "uuid": 8210714841753512653},

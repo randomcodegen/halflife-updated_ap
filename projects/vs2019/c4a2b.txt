@@ -1,0 +1,4 @@
+{"id": 1, "name": "Battery", "classname": "item_battery", "uuid": 9042387578063838529},
+{"id": 2, "name": "Battery", "classname": "item_battery", "uuid": 2057497784398390045},
+{"id": 3, "name": "Battery", "classname": "item_battery", "uuid": 13109643485984009121},
+{"id": 4, "name": "Battery", "classname": "item_battery", "uuid": 7496034891399422170},

@@ -21,14 +21,14 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>NotSet</CharacterSet>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>NotSet</CharacterSet>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -56,13 +56,12 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;_DEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;HL_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>..\..\dlls;..\..\cl_dll;..\..\cl_dll\particleman;..\..\public;..\..\common;..\..\pm_shared;..\..\engine;..\..\utils\vgui\include;..\..\game_shared;..\..\external;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <AdditionalIncludeDirectories>C:\Users\Rando\Documents\projects\halflife-updated_ap\APCpp;..\..\dlls;..\..\cl_dll;..\..\cl_dll\particleman;..\..\public;..\..\common;..\..\pm_shared;..\..\engine;..\..\utils\vgui\include;..\..\game_shared;..\..\external;..\..\public\archipelago;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <AdditionalOptions>/Zc:threadSafeInit- %(AdditionalOptions)</AdditionalOptions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -71,9 +70,10 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>..\..\utils\vgui\lib\win32_vc16\vgui.lib;wsock32.lib;..\..\lib\public\sdl2.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;APCppDLL.lib;Bcrypt.lib;Crypt32.lib;..\..\utils\vgui\lib\win32_vc16\vgui.lib;wsock32.lib;..\..\lib\public\sdl2.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <BaseAddress>
       </BaseAddress>
+      <AdditionalLibraryDirectories>C:\Users\Rando\Documents\projects\halflife-updated_ap\APCpp;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>cmd /c ""$(ProjectDir)..\..\filecopy.bat" "$(OutDir)" "cl_dlls" "$(TargetFileName)""
@@ -201,6 +201,13 @@ cmd /c ""$(ProjectDir)..\..\filecopy.bat" "$(SolutionDir)../../network" "" "delt
     <ClCompile Include="..\..\pm_shared\pm_debug.cpp" />
     <ClCompile Include="..\..\pm_shared\pm_math.cpp" />
     <ClCompile Include="..\..\pm_shared\pm_shared.cpp" />
+    <ClCompile Include="..\..\public\archipelago\ap_hud.cpp" />
+    <ClCompile Include="..\..\public\archipelago\ap_integration.cpp">
+      <PreprocessToFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</PreprocessToFile>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">WIN32;_CRT_SECURE_NO_WARNINGS;_DEBUG;_WINDOWS;CLIENT_DLL;CLIENT_WEAPONS;HL_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="..\..\public\archipelago\ap_lib.cpp" />
+    <ClCompile Include="..\..\public\archipelago\ap_log.cpp" />
     <ClCompile Include="..\..\public\interface.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -294,6 +301,10 @@ cmd /c ""$(ProjectDir)..\..\filecopy.bat" "$(SolutionDir)../../network" "" "delt
     <ClInclude Include="..\..\pm_shared\pm_materials.h" />
     <ClInclude Include="..\..\pm_shared\pm_movevars.h" />
     <ClInclude Include="..\..\pm_shared\pm_shared.h" />
+    <ClInclude Include="..\..\public\archipelago\ap_hud.h" />
+    <ClInclude Include="..\..\public\archipelago\ap_integration.h" />
+    <ClInclude Include="..\..\public\archipelago\ap_lib.h" />
+    <ClInclude Include="..\..\public\archipelago\ap_log.h" />
     <ClInclude Include="..\..\public\interface.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -27,6 +27,8 @@
 #include "func_break.h"
 #include "decals.h"
 #include "explode.h"
+// [ap]
+#include "ap_integration.h"
 
 // =================== FUNC_Breakable ==============================================
 
@@ -179,6 +181,13 @@ void CBreakable::Spawn()
 	// Flag unbreakable glass as "worldbrush" so it will block ALL tracelines
 	if (!IsBreakable() && pev->rendermode != kRenderNormal)
 		pev->flags |= FL_WORLDBRUSH;
+	// [ap] store permanent identifier in netname if the pushable object has items inside
+	if (!FStringNull(m_iszSpawnObject))
+	{
+		std::string hash_str = generate_hash(pev->absmax[0], pev->absmax[1], pev->absmax[2], STRING(pev->classname));
+		pev->netname = ALLOC_STRING(hash_str.c_str());
+		if (pev->body == 0) pev->body = 250;
+	}
 }
 
 
@@ -541,11 +550,15 @@ void CBreakable::TraceAttack(entvars_t* pevAttacker, float flDamage, Vector vecD
 bool CBreakable::TakeDamage(entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType)
 {
 	Vector vecTemp;
-
 	// if Attacker == Inflictor, the attack was a melee or other instant-hit attack.
 	// (that is, no actual entity projectile was involved in the attack so use the shooter's origin).
 	if (pevAttacker == pevInflictor)
 	{
+		// [ap] block melee damage if we can't break stuff
+		if (!ap_can_break())
+		{
+			return false;
+		}
 		vecTemp = pevInflictor->origin - (pev->absmin + (pev->size * 0.5));
 
 		// if a client hit the breakable with a crowbar, and breakable is crowbar-sensitive, break it now.
@@ -871,6 +884,13 @@ void CPushable::Spawn()
 	// Multiply by area of the box's cross-section (assume 1000 units^3 standard volume)
 	pev->skin = (pev->skin * (pev->maxs.x - pev->mins.x) * (pev->maxs.y - pev->mins.y)) * 0.0005;
 	m_soundTime = 0;
+
+	// [ap] store permanent identifier in netname if the pushable object has items inside
+	// TODO: Can this even happen? It happens for breakables.
+	if (!FStringNull(m_iszSpawnObject)) {
+		std::string hash_str = generate_hash(pev->absmax[0], pev->absmax[1], pev->absmax[2], STRING(pev->classname));
+		pev->netname = ALLOC_STRING(hash_str.c_str());		
+	}
 }
 
 
@@ -932,8 +952,11 @@ void CPushable::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useT
 		return;
 	}
 
-	if (pActivator->pev->velocity != g_vecZero)
+	// [ap] only grab items if allowed
+	if (pActivator->pev->velocity != g_vecZero && ap_can_grab())
+	{
 		Move(pActivator, false);
+	}
 }
 
 
@@ -941,8 +964,9 @@ void CPushable::Touch(CBaseEntity* pOther)
 {
 	if (FClassnameIs(pOther->pev, "worldspawn"))
 		return;
-
-	Move(pOther, true);
+	// [ap] if we are not allowed to grab, we also cant push objects
+	if (ap_can_grab())
+		Move(pOther, true);
 }
 
 
@@ -967,7 +991,7 @@ void CPushable::Move(CBaseEntity* pOther, bool push)
 		// JoshA: Used to check for FORWARD too and logic was inverted
 		// from comment which seems wrong.
 		// Fixed to just check for USE being not set for PUSH.
-		// Should have the right effect.
+		// Should have the right effect.		
 		if (push && !!(pevToucher->button & IN_USE)) // Don't push unless the player is not useing (pull)
 			return;
 		playerTouch = true;
@@ -994,11 +1018,18 @@ void CPushable::Move(CBaseEntity* pOther, bool push)
 	// now act as if it's added at a constant rate with a fudge factor.
 	extern cvar_t sv_pushable_fixed_tick_fudge;
 
+	//[ap] removed fixed tick, always adhere to fps
+	/*
 	if (!push && sv_pushable_fixed_tick_fudge.value >= 0.0f)
 	{
 		factor *= gpGlobals->frametime * sv_pushable_fixed_tick_fudge.value;
-	}
+	}*/
 
+
+	// [ap] disable the pushable fix for extreme logic tricks
+	pev->velocity.x += pevToucher->velocity.x * factor;
+	pev->velocity.y += pevToucher->velocity.y * factor;
+	
 	// JoshA: Always apply this if pushing, or if under the player's velocity.
 	if (push || (abs(pev->velocity.x) < abs(pevToucher->velocity.x - pevToucher->velocity.x * factor)))
 		pev->velocity.x += pevToucher->velocity.x * factor;
@@ -1006,13 +1037,20 @@ void CPushable::Move(CBaseEntity* pOther, bool push)
 		pev->velocity.y += pevToucher->velocity.y * factor;
 
 	float length = sqrt(pev->velocity.x * pev->velocity.x + pev->velocity.y * pev->velocity.y);
-	if (length > MaxSpeed())
+	// [ap]
+	//if (length > MaxSpeed())
+	if ((push) && (length > MaxSpeed()))
 	{
 		pev->velocity.x = (pev->velocity.x * MaxSpeed() / length);
 		pev->velocity.y = (pev->velocity.y * MaxSpeed() / length);
 	}
 	if (playerTouch)
 	{
+		// [ap] also removed the fix here
+		pevToucher->velocity.x = pev->velocity.x;
+		pevToucher->velocity.y = pev->velocity.y;
+
+		/*
 		// JoshA: Match the player to our pushable's velocity.
 		// Previously this always happened, but it should only
 		// happen if the player is pushing (or rather, being pushed.)
@@ -1022,6 +1060,7 @@ void CPushable::Move(CBaseEntity* pOther, bool push)
 			pevToucher->velocity.x = pev->velocity.x;
 			pevToucher->velocity.y = pev->velocity.y;
 		}
+		*/
 
 		if ((gpGlobals->time - m_soundTime) > 0.7)
 		{

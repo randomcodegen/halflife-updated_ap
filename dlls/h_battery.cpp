@@ -27,6 +27,7 @@
 #include "player.h"
 #include "skill.h"
 #include "gamerules.h"
+#include "ap_integration.h"
 
 class CRecharge : public CBaseToggle
 {
@@ -95,6 +96,8 @@ void CRecharge::Spawn()
 	SET_MODEL(ENT(pev), STRING(pev->model));
 	m_iJuice = gSkillData.suitchargerCapacity;
 	pev->frame = 0;
+	// [ap]
+	pev->body = 249;
 }
 
 void CRecharge::Precache()
@@ -109,6 +112,10 @@ void CRecharge::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useT
 {
 	// if it's not a player, ignore
 	if (!FClassnameIs(pActivator->pev, "player"))
+		return;
+
+	ALERT(at_notice, "HEVUse: %s\n", STRING(this->pev->netname));
+	if (!ap_can_use())
 		return;
 
 	auto player = static_cast<CBasePlayer*>(pActivator);

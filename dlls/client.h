@@ -15,6 +15,20 @@
 
 #pragma once
 
+// [ap]
+#include <queue>
+#include <string>
+#include "eiface.h"
+
+struct PendingMessage
+{
+	ALERT_TYPE level;
+	std::string text;
+};
+
+extern std::queue<PendingMessage> g_MessageQueue;
+extern bool g_bMapLoaded;
+
 extern void respawn(entvars_t* pev, bool fCopyCorpse);
 extern qboolean ClientConnect(edict_t* pEntity, const char* pszName, const char* pszAddress, char szRejectReason[128]);
 extern void ClientDisconnect(edict_t* pEntity);

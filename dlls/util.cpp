@@ -32,6 +32,9 @@
 #include "gamerules.h"
 #include "UserMessages.h"
 
+// [ap]
+#include "client.h"
+
 float UTIL_WeaponTimeBase()
 {
 #if defined(CLIENT_WEAPONS)
@@ -358,9 +361,9 @@ void DBG_AssertFunction(
 		return;
 	char szOut[512];
 	if (szMessage != NULL)
-		sprintf(szOut, "ASSERT FAILED:\n %s \n(%s@%d)\n%s", szExpr, szFile, szLine, szMessage);
+		sprintf(szOut, "ASSERT FAILED:\n %s \n(%s@%d)\n%s\n", szExpr, szFile, szLine, szMessage);
 	else
-		sprintf(szOut, "ASSERT FAILED:\n %s \n(%s@%d)", szExpr, szFile, szLine);
+		sprintf(szOut, "ASSERT FAILED:\n %s \n(%s@%d)\n", szExpr, szFile, szLine);
 	ALERT(at_console, szOut);
 }
 #endif // DEBUG
@@ -2564,4 +2567,35 @@ bool CRestore::BufferCheckZString(const char* string)
 			return true;
 	}
 	return false;
+}
+
+
+// [ap]
+
+void SendMultiLineMessageToClients(ALERT_TYPE level, const char* pszLine)
+{
+	if (!pszLine || gmsg_MultiLineNotify <= 0)
+		return;
+
+	g_MessageQueue.push({level, pszLine});
+}
+
+void MyAlertMessage(ALERT_TYPE level, const char* pszFmt, ...)
+{
+	char szBuffer[1024];
+	va_list argptr;
+
+	va_start(argptr, pszFmt);
+	vsnprintf(szBuffer, sizeof(szBuffer), pszFmt, argptr);
+	va_end(argptr);
+
+	// TODO: Only send AP messages over net protocol
+	// Send the full message string to clients
+	if (level <= CVAR_GET_FLOAT("developer")) {
+		SendMultiLineMessageToClients(level, szBuffer);
+		// for nor always print to console if dev level matches
+		g_engfuncs.pfnServerPrint(szBuffer);
+	}
+	
+
 }

@@ -22,6 +22,8 @@
 #include "gamerules.h"
 #include "game.h"
 #include "pm_shared.h"
+// [ap]
+#include "ap_integration.h"
 
 void EntvarsKeyvalue(entvars_t* pev, KeyValueData* pkvd);
 
@@ -160,6 +162,61 @@ int DispatchSpawn(edict_t* pent)
 
 		if (pEntity)
 		{
+			// [ap] this gets called for spawning items out of breakable objects, not related to server-activate
+
+			// check if we are spawning a relevant item and replace the model
+			// only log&replace items, ammo and weapons
+			const char* classname = STRING(pEntity->pev->classname);
+			const char* modelname = STRING(pEntity->pev->model);
+			// store hash on monster spawns without replacing
+			if (!strncmp(classname, "monster", 7)) {
+				std::string hash_str = generate_hash(pEntity->pev->absmax[0], pEntity->pev->absmax[1], pEntity->pev->absmax[2], STRING(pEntity->pev->classname));
+				pEntity->pev->netname = ALLOC_STRING(hash_str.c_str());
+			}
+			// same with charging stations
+			if (!strcmp(classname, "func_healthcharger") || !strcmp(classname, "func_recharge"))
+			{
+				std::string hash_str = generate_hash(pEntity->pev->absmax[0], pEntity->pev->absmax[1], pEntity->pev->absmax[2], STRING(pEntity->pev->classname));
+				pEntity->pev->netname = ALLOC_STRING(hash_str.c_str());
+			}
+			// replace models here
+			if (!strncmp(classname, "item", 4) || !strncmp(classname, "ammo", 4) || !strncmp(classname, "weapon", 6))
+			{
+				// [ap] log item spawns here and replace models
+
+				// This is done in the actual spawn functions now
+				//PRECACHE_MODEL("models/ap-logo.mdl");
+				SET_MODEL(ENT(pEntity->pev), "models/ap-logo.mdl");
+				UTIL_SetSize(pEntity->pev, Vector(-16, -16, 0), Vector(16, 16, 32));
+				ENT(pEntity->pev)->v.framerate = (float)0.5;
+
+				// calculate the hash for it and save it in netname
+				// dont overwrite if netname is already set!
+				const char* netname STRING(pEntity->pev->netname);
+				const char* pown_classname = "";
+				if (!strcmp(STRING(pEntity->pev->netname), ""))
+				{
+					// check if the item fell out of a breakable object
+					if (pEntity->pev->owner)
+					{	
+						edict_t* eOwner =  pEntity->pev->owner;
+						const char* pown_classname = STRING(eOwner->v.classname);
+						// in this case we grab the netname from this object for our dropped one
+						pEntity->pev->netname = ALLOC_STRING(STRING(eOwner->v.netname));
+					}
+					else
+					{
+						std::string hash_str = generate_hash(pEntity->pev->absmax[0], pEntity->pev->absmax[1], pEntity->pev->absmax[2], STRING(pEntity->pev->classname));
+						pEntity->pev->netname = ALLOC_STRING(hash_str.c_str());
+					}
+				}
+				//else
+					//printf("Netname was already set for %s\n", STRING(pEntity->pev->netname));
+				//ALERT(at_notice, "Cbase Create %s %s %f %f %f\n", STRING(pEntity->pev->classname), STRING(pEntity->pev->netname), pEntity->pev->absmax[0], pEntity->pev->absmax[1], pEntity->pev->absmax[2]);
+				printf("Cbase Create %s %s %f %f %f\n", STRING(pEntity->pev->classname), STRING(pEntity->pev->netname), pEntity->pev->absmax[0], pEntity->pev->absmax[1], pEntity->pev->absmax[2]);
+				// Print JSON-Style in console
+				netname = STRING(pEntity->pev->netname);
+			}
 			if (g_pGameRules && !g_pGameRules->IsAllowedToSpawn(pEntity))
 				return -1; // return that this entity should be deleted
 			if ((pEntity->pev->flags & FL_KILLME) != 0)

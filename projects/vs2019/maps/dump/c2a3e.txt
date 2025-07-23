@@ -1,0 +1,5 @@
+{"id": 1, "name": "Changelevel (1)", "classname": "trigger_changelevel", "targetname": "c2a4", "uuid": 16492801346721297398},
+{"id": 2, "name": "Human_grunt (2)", "classname": "monster_human_grunt", "uuid": 15634119842504415498},
+{"id": 3, "name": "Human_grunt (3)", "classname": "monster_human_grunt", "uuid": 3222660312893593377},
+{"id": 4, "name": "Changelevel (4)", "classname": "trigger_changelevel", "targetname": "c2a3d", "uuid": 11460628911400773316},
+{"id": 5, "name": "Crowbar (5)", "classname": "weapon_crowbar", "uuid": 6254822477932948746},

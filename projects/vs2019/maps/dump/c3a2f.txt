@@ -1,0 +1,7 @@
+{"id": 1, "name": "Changelevel (1)", "classname": "trigger_changelevel", "targetname": "c3a2c", "uuid": 2662117538744500736},
+{"id": 2, "name": "Changelevel (2)", "classname": "trigger_changelevel", "targetname": "c3a2c", "uuid": 12637045504088201565},
+{"id": 3, "name": "Scientist_dead (3)", "classname": "monster_scientist_dead", "uuid": 737749851531779612},
+{"id": 4, "name": "Healthkit (4)", "classname": "item_healthkit", "uuid": 17692910033951012187},
+{"id": 5, "name": "Gaussclip (5)", "classname": "ammo_gaussclip", "uuid": 17460494128291562904},
+{"id": 6, "name": "Gaussclip (6)", "classname": "ammo_gaussclip", "uuid": 11925512571625075585},
+{"id": 7, "name": "Changelevel (7)", "classname": "trigger_changelevel", "targetname": "c3a2c", "uuid": 14502569670302109463},

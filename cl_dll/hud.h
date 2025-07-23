@@ -36,6 +36,7 @@
 class CHudMultiNotify;
 class CHudAPText;
 class CHudSpeedometer;
+class CHudChangelevelText;
 
 struct TriggerZone
 {
@@ -595,6 +596,8 @@ public:
 	CHudMultiNotify* m_MultiNotify;
 	CHudAPText* m_APText;
 	CHudSpeedometer* m_Speedometer;
+	CHudChangelevelText* m_ChangelevelText;
+
 	Vector m_vecPlayerVelocity;
 	void Init();
 	void VidInit();

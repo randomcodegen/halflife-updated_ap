@@ -97,13 +97,13 @@ bool load_settings(const char* filename, ap_connection_settings_t& settings)
 	}
 
 	if (root.isMember("ip") && root["ip"].isString())
-		settings.ip = strdup(root["ip"].asCString());
+		settings.ip = _strdup(root["ip"].asCString());
 
 	if (root.isMember("player") && root["player"].isString())
-		settings.player = strdup(root["player"].asCString());
+		settings.player = _strdup(root["player"].asCString());
 
 	if (root.isMember("password") && root["password"].isString())
-		settings.password = strdup(root["password"].asCString());
+		settings.password = _strdup(root["password"].asCString());
 
     ap_connection_settings.mode = AP_SERVER;
 

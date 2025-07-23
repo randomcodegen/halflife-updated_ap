@@ -37,7 +37,7 @@ static void init_location_table(Json::Value& locations)
 		{
 			if (locations[level_name]["sprites"][sprite_id]["id"].isInt64())
 			{
-				int location_id = locations[level_name]["sprites"][sprite_id]["id"].asInt64();
+				uint64_t location_id = locations[level_name]["sprites"][sprite_id]["id"].asInt64();
 				if (location_id >= 0)
 					ap_locations[AP_SHORT_LOCATION(location_id)].state |= (AP_LOC_PICKUP);
 			}
@@ -50,7 +50,7 @@ static void init_location_table(Json::Value& locations)
 		{
 			if (locations[level_name]["sectors"][sector_id]["id"].isInt64())
 			{
-				int location_id = locations[level_name]["sectors"][sector_id]["id"].asInt64();
+				uint64_t location_id = locations[level_name]["sectors"][sector_id]["id"].asInt64();
 				if (location_id >= 0)
 					ap_locations[AP_SHORT_LOCATION(location_id)].state |= (AP_LOC_SECRET);
 			}
@@ -63,7 +63,7 @@ static void init_location_table(Json::Value& locations)
 		{
 			if (locations[level_name]["exits"][exit_tag]["id"].isInt64())
 			{
-				int location_id = locations[level_name]["exits"][exit_tag]["id"].asInt64();
+				uint64_t location_id = locations[level_name]["exits"][exit_tag]["id"].asInt64();
 				if (location_id >= 0)
 					ap_locations[AP_SHORT_LOCATION(location_id)].state |= (AP_LOC_EXIT);
 			}

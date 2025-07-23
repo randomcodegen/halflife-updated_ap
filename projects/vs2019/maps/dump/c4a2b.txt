@@ -1,0 +1,6 @@
+{"id": 1, "name": "Changelevel (1)", "classname": "trigger_changelevel", "targetname": "c4a2a", "uuid": 16661105200981639107},
+{"id": 2, "name": "Changelevel (2)", "classname": "trigger_changelevel", "targetname": "c4a1a", "uuid": 16577991367083943500},
+{"id": 3, "name": "Battery (3)", "classname": "item_battery", "uuid": 9042387578063838529},
+{"id": 4, "name": "Battery (4)", "classname": "item_battery", "uuid": 2057497784398390045},
+{"id": 5, "name": "Battery (5)", "classname": "item_battery", "uuid": 13109643485984009121},
+{"id": 6, "name": "Battery (6)", "classname": "item_battery", "uuid": 7496034891399422170},

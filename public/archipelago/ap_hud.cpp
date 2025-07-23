@@ -282,10 +282,26 @@ void LoadMaps()
 				auto it = std::find_if(mapList.begin(), mapList.end(),
 					[&](const std::string& candidate)
 					{ return _stricmp(candidate.c_str(), mapName.c_str()) == 0; });
+				if (AP_DUMP_EDICT) {
+					if (it == mapList.end())
+						mapList.push_back(std::move(mapName));
+				}
+				else {
+				// List of allowed prefixes
+				// TODO: Check for allowed maps according to multiworld
+				const std::vector<std::string> allowedPrefixes = {
+					"c0", "c1", "c2", "c3", "c4", "c5", "t0"};
 
-				if (it == mapList.end())
+				// Check if the map matches any of the prefixes
+				bool matchesPrefix = std::any_of(allowedPrefixes.begin(), allowedPrefixes.end(),
+					[&](const std::string& prefix)
+					{
+						return mapName.rfind(prefix, 0) == 0; // 0 = no prefix matched
+					});
+
+				if (matchesPrefix && it == mapList.end())
 					mapList.push_back(std::move(mapName));
-
+				}
 			} while ((fileName = g_pFileSystem->FindNext(handle)) != nullptr);
 
 			g_pFileSystem->FindClose(handle);
@@ -334,7 +350,7 @@ void LoadMaps()
 			else
 				currentIndex = 0; // fallback
 
-			nextChangeTime = curtime + 3.0f; // set delay
+			nextChangeTime = curtime + 2.0f; // set delay
 			mapMatched = true;
 		}
 
@@ -666,7 +682,8 @@ void ShowMapMenu()
 
 void CHudAPText::RenderMenu()
 {
-	if (menuOpen)
+	const char* mapName = gEngfuncs.pfnGetLevelName();
+	if (menuOpen || mapName && strcmp(mapName, "maps/menu.bsp") == 0)
 	{
 		if (!wasMenuOpen)
 		{
@@ -706,48 +723,10 @@ void CHudAPText::RenderMenu()
 
 bool CHudAPText::Draw(float flTime)
 {
-	/*
-	if (menuOpen)
-	{
-		if (!wasMenuOpen)
-		{
-			// Entering menu
-			gEngfuncs.pfnSetMouseEnable(0);
-			IN_DeactivateMouse();
-		}
-		UpdateMouseState();
-	}
-	else if (wasMenuOpen)
-	{
-		// Menu just closed — re-enable game input
-		gEngfuncs.pfnSetMouseEnable(1);
-		IN_ActivateMouse();
-
-		// Reset ImGui input state
-		ImGuiIO& io = ImGui::GetIO();
-		io.MouseDrawCursor = false;
-		io.MouseDown[0] = false;
-		io.MouseDown[1] = false;
-	}
-
-	wasMenuOpen = menuOpen;
-	const char* mapName = gEngfuncs.pfnGetLevelName();
 	if (AP_DUMP_EDICT)
 		LoadMaps();
-	//else if (mapName && strcmp(mapName, "maps/menu.bsp") == 0) {
-	else if (menuOpen) {
-		ImGui_ImplOpenGL2_NewFrame();
-		ImGui_ImplWin32_NewFrame();
-		ImGui::NewFrame();
-
-		ShowMapMenu();
-
-		// Rendering
-		ImGui::Render();
-		ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
-	}*/
 	RenderMenu();
-	
+
 	char szText[128];
 	snprintf(szText, sizeof(szText),
 		"JUMP:%c  CROU:%c  RUN:%c  DIVE:%c\n"
@@ -1050,5 +1029,47 @@ bool CHudSpeedometer::Draw(float flTime)
 	lastTime = flTime;
 	lastVelZ = currentVelZ;
 
+	return true;
+}
+
+// automap info
+
+bool CHudChangelevelText::Init()
+{
+	gHUD.AddHudElem(this);
+	m_iFlags |= HUD_ACTIVE;
+	m_szText[0] = '\0';
+	m_flDisplayTime = 0.0f;
+	return true;
+}
+
+void CHudChangelevelText::SetText(const char* text)
+{
+	if (text && *text)
+	{
+		strncpy(m_szText, text, sizeof(m_szText));
+		m_flDisplayTime = gEngfuncs.GetClientTime()+1.0f; // display for 1s
+	}
+	else
+	{
+		m_szText[0] = '\0';
+	}
+}
+
+bool CHudChangelevelText::Draw(float time)
+{
+	if (m_flDisplayTime < time || !*m_szText)
+		return false;
+
+	int x = ScreenWidth / 2;
+	int y = ScreenHeight / 2 + 20;
+
+	bool is_locked = true; // TODO: Set based on ap item states
+
+	int r = is_locked ? 255 : 0;
+	int g = is_locked ? 0 : 255;
+	int b = 0;
+
+	gHUD.DrawHudString(x, y, 200, m_szText, r, g, b);
 	return true;
 }

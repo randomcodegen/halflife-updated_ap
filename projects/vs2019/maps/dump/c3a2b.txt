@@ -1,0 +1,7 @@
+{"id": 1, "name": "Changelevel (1)", "classname": "trigger_changelevel", "targetname": "c3a2a", "uuid": 11289678397834411145},
+{"id": 2, "name": "Changelevel (2)", "classname": "trigger_changelevel", "targetname": "c3a2c", "uuid": 3186400999195890334},
+{"id": 3, "name": "Changelevel (3)", "classname": "trigger_changelevel", "targetname": "c3a2c", "uuid": 7010135578189460454},
+{"id": 4, "name": "Changelevel (4)", "classname": "trigger_changelevel", "targetname": "c3a2c", "uuid": 13914263941941260167},
+{"id": 5, "name": "Gaussclip (5)", "classname": "ammo_gaussclip", "uuid": 13969910099399020425},
+{"id": 6, "name": "Alien_slave (6)", "classname": "monster_alien_slave", "uuid": 6654912757207764767},
+{"id": 7, "name": "Alien_slave (7)", "classname": "monster_alien_slave", "uuid": 3749896779440347029},

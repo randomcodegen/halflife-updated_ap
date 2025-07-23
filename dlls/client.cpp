@@ -764,6 +764,8 @@ void ClientUserInfoChanged(edict_t* pEntity, char* infobuffer)
 
 static int g_serveractive = 0;
 
+bool g_bDidEntityDump = false;
+
 void ServerDeactivate()
 {
 	// It's possible that the engine will call this function more times than is necessary
@@ -777,52 +779,8 @@ void ServerDeactivate()
 
 	// Peform any shutdown operations here...
 	//
-}
-// [ap]
-bool g_bMapLoaded = false;
-void DumpMapSpawnAndLandmarkData()
-{
-	const char* mapname = STRING(gpGlobals->mapname);
-	if (!mapname || !*mapname)
-		return;
-
-	char path[128];
-	snprintf(path, sizeof(path), "maps/data/%s.txt", mapname);
-
-	FILE* fp = fopen(path, "w");
-	if (!fp)
-	{
-		ALERT(at_error, "Could not open %s for writing.\n", path);
-		return;
-	}
-
-	edict_t* pEnt = NULL;
-	for (int i = 0; i < gpGlobals->maxEntities; ++i)
-	{
-		pEnt = INDEXENT(i);
-		if (!pEnt || pEnt->free)
-			continue;
-
-		const char* classname = STRING(pEnt->v.classname);
-		if (!classname)
-			continue;
-
-		if (!_stricmp(classname, "info_player_start") ||
-			!_stricmp(classname, "info_player_deathmatch") ||
-			!_stricmp(classname, "info_landmark"))
-		{
-			const char* targetname = STRING(pEnt->v.targetname);
-			const Vector& origin = pEnt->v.origin;
-
-			fprintf(fp, "%s \"%s\" %.1f %.1f %.1f\n",
-				classname,
-				targetname ? targetname : "",
-				origin.x, origin.y, origin.z);
-		}
-	}
-
-	fclose(fp);
-	ALERT(at_console, "Dumped spawn and landmark data for %s\n", mapname);
+	// [ap]
+	g_bDidEntityDump = false;
 }
 
 void ServerActivate(edict_t* pEdictList, int edictCount, int clientMax)
@@ -830,26 +788,6 @@ void ServerActivate(edict_t* pEdictList, int edictCount, int clientMax)
 	int i;
 	CBaseEntity* pClass;
 	g_serveractive = 1;
-
-	// [ap]
-	int ap_id = 1;
-	FILE* fp = nullptr;
-
-	if (AP_DUMP_EDICT)
-	{
-		const char* mapname = STRING(gpGlobals->mapname);
-
-		// Save directly to ./mapname.txt
-		char filepath[128];
-		snprintf(filepath, sizeof(filepath), "%s.txt", mapname);
-
-		fp = fopen(filepath, "w");
-		if (!fp)
-		{
-			ALERT(at_error, "Failed to open dump file: %s\n", filepath);
-		}
-		DumpMapSpawnAndLandmarkData();
-	}
 
 	for (i = 0; i < edictCount; i++)
 	{
@@ -870,33 +808,7 @@ void ServerActivate(edict_t* pEdictList, int edictCount, int clientMax)
 		{
 			ALERT(at_console, "Can't instance %s\n", STRING(pEdictList[i].v.classname));
 		}
-
-		const char* classname = STRING(pEdictList[i].v.classname);
-		const char* netname = STRING(pEdictList[i].v.netname);
-		//printf("Spawning %s\n", classname);
-		if (AP_DUMP_EDICT && fp && pClass && ((strcmp(netname, "") && !strcmp(classname, "func_breakable")) || (strchr(classname, '_') && (strncmp(classname, "item_", 5) == 0 || strncmp(classname, "ammo_", 5) == 0 || strncmp(classname, "weapon_", 7) == 0 || strncmp(classname, "monster_", 8) == 0))))
-		{
-			// Get the part after the prefix
-			const char* underscore = strchr(classname, '_');
-			const char* stripped = underscore ? underscore + 1 : classname;
-
-			char nameBuffer[128] = {0};
-			strncpy(nameBuffer, stripped, sizeof(nameBuffer) - 1);
-
-			// Capitalize the first letter
-			if (nameBuffer[0] >= 'a' && nameBuffer[0] <= 'z')
-				nameBuffer[0] = nameBuffer[0] - 'a' + 'A';
-
-			fprintf(fp, "{\"id\": %i, \"name\": \"%s\", \"classname\": \"%s\", \"uuid\": %s},\n",
-				ap_id, nameBuffer, STRING(pClass->pev->classname), STRING(pClass->pev->netname));
-
-			ap_id += 1;
-		}
 	}
-
-	if (fp)
-		fclose(fp);
-
 	LinkUserMessages();
 }
 
@@ -1072,9 +984,224 @@ void InitMapLoadingUtils()
 
 static bool g_LastAllowBunnyHoppingState = false;
 
+// [ap]
+bool g_bMapLoaded = false;
+void DumpMapSpawnAndLandmarkData()
+{
+	const char* mapname = STRING(gpGlobals->mapname);
+	if (!mapname || !*mapname)
+		return;
+
+	char path[128];
+	snprintf(path, sizeof(path), "maps/data/%s.txt", mapname);
+
+	FILE* fp = fopen(path, "w");
+	if (!fp)
+	{
+		ALERT(at_error, "Could not open %s for writing.\n", path);
+		return;
+	}
+
+	edict_t* pEnt = NULL;
+	for (int i = 0; i < gpGlobals->maxEntities; ++i)
+	{
+		pEnt = INDEXENT(i);
+		if (!pEnt || pEnt->free)
+			continue;
+
+		const char* classname = STRING(pEnt->v.classname);
+		if (!classname)
+			continue;
+
+		if (!_stricmp(classname, "info_player_start") ||
+			!_stricmp(classname, "info_player_deathmatch") ||
+			!_stricmp(classname, "info_landmark"))
+		{
+			const char* targetname = STRING(pEnt->v.targetname);
+			const Vector& origin = pEnt->v.origin;
+
+			fprintf(fp, "%s \"%s\" %.1f %.1f %.1f\n",
+				classname,
+				targetname ? targetname : "",
+				origin.x, origin.y, origin.z);
+		}
+	}
+
+	fclose(fp);
+	ALERT(at_console, "Dumped spawn and landmark data for %s\n", mapname);
+}
+
+void DumpMapEntityData()
+{
+	int i;
+	CBaseEntity* pClass;
+	int ap_id = 1;
+	FILE* fp = nullptr;
+
+	if (AP_DUMP_EDICT)
+	{
+		const char* mapname = STRING(gpGlobals->mapname);
+		char filepath[256];
+		snprintf(filepath, sizeof(filepath), "maps/dump/%s.txt", mapname);
+		fp = fopen(filepath, "w");
+		if (!fp)
+		{
+			ALERT(at_error, "Failed to open dump file: %s\n", filepath);
+			return;
+		}
+
+		DumpMapSpawnAndLandmarkData();
+	}
+
+	for (i = 0; i < gpGlobals->maxEntities; i++)
+	{
+		edict_t* pEdict = INDEXENT(i);
+		if (!pEdict || pEdict->free)
+			continue;
+
+		if ((i > 0 && i <= gpGlobals->maxClients) || !pEdict->pvPrivateData)
+			continue;
+
+		pClass = CBaseEntity::Instance(pEdict);
+		if (!pClass || (pClass->pev->flags & FL_DORMANT))
+			continue;
+
+		const char* classname = STRING(pClass->pev->classname);
+		const char* netname = STRING(pClass->pev->netname);
+
+		if (AP_DUMP_EDICT && fp &&
+			((strcmp(netname, "") && !strcmp(classname, "func_breakable")) ||
+				(!strncmp(classname, "item_", 5) || !strncmp(classname, "ammo_", 5) ||
+					!strncmp(classname, "weapon_", 7) || !strncmp(classname, "monster_", 8) ||
+					!strcmp(classname, "trigger_changelevel"))))
+		{
+			const char* underscore = strchr(classname, '_');
+			const char* stripped = underscore ? underscore + 1 : classname;
+
+			char nameBuffer[128] = {0};
+			strncpy(nameBuffer, stripped, sizeof(nameBuffer) - 1);
+			if (nameBuffer[0] >= 'a' && nameBuffer[0] <= 'z')
+				nameBuffer[0] = nameBuffer[0] - 'a' + 'A';
+
+			// Special handling for trigger_changelevel
+			if (!strcmp(classname, "trigger_changelevel"))
+			{
+				const char* targetname = STRING(pClass->pev->message);
+				fprintf(fp, "{\"id\": %i, \"name\": \"%s (%i)\", \"classname\": \"%s\", \"targetname\": \"%s\", \"uuid\": %s},\n",
+					ap_id, nameBuffer, ap_id, classname, targetname && *targetname ? targetname : "", netname);
+			}
+			else
+			{
+				fprintf(fp, "{\"id\": %i, \"name\": \"%s (%i)\", \"classname\": \"%s\", \"uuid\": %s},\n",
+					ap_id, nameBuffer, ap_id, classname, netname);
+			}
+
+			ap_id++;
+		}
+	}
+
+	if (fp)
+		fclose(fp);
+}
+
+
 //
 // GLOBALS ASSUMED SET:  g_ulFrameCount
 //
+
+// [ap] draw automap info
+bool RaySegmentIntersectsBox(const Vector& rayOrigin, const Vector& rayDir, float maxDistance,
+	const Vector& boxMin, const Vector& boxMax, float* tOut)
+{
+	float tNear = 0.0f;
+	float tFar = maxDistance;
+
+	for (int i = 0; i < 3; ++i)
+	{
+		float rayOrig = rayOrigin[i];
+		float rayDelta = rayDir[i];
+		float bMin = boxMin[i];
+		float bMax = boxMax[i];
+		
+
+		if (rayDelta == 0.0f)
+		{
+			if (rayOrig < bMin || rayOrig > bMax)
+				return false;
+		}
+		else
+		{
+			float t1 = (bMin - rayOrig) / rayDelta;
+			float t2 = (bMax - rayOrig) / rayDelta;
+
+			if (t1 > t2)
+				std::swap(t1, t2);
+
+			if (t1 > tNear)
+				tNear = t1;
+			if (t2 < tFar)
+				tFar = t2;
+
+			if (tNear > tFar)
+				return false;
+			if (tFar < 0)
+				return false;
+		}
+	}
+
+	if (tOut)
+		*tOut = tNear;
+
+	return true;
+}
+
+void CheckPlayerLookingAtChangelevel(CBasePlayer* pPlayer)
+{
+	Vector eye = pPlayer->EyePosition();
+	Vector forward;
+	UTIL_MakeVectorsPrivate(pPlayer->pev->v_angle, forward, nullptr, nullptr);
+	forward = forward.Normalize();
+
+	CBaseEntity* closestEnt = nullptr;
+	float closestT = FLT_MAX;
+
+	for (CBaseEntity* pEnt = nullptr; (pEnt = UTIL_FindEntityByClassname(pEnt, "trigger_changelevel")) != nullptr;)
+	{
+		Vector toEntity = (pEnt->pev->origin - eye).Normalize();
+		float dot = DotProduct(forward, toEntity);
+
+		//if (dot > 0.5f) // entity not in front enough, skip
+		//	continue;
+
+		float t;
+		float maxDist = 8192.0f;
+		if (RaySegmentIntersectsBox(eye, forward, maxDist, pEnt->pev->absmin, pEnt->pev->absmax, &t))
+		{
+			if (t > 0.0f && t < maxDist)
+			{
+				closestT = t;
+				closestEnt = pEnt;
+			}
+		}
+	}
+
+	if (closestEnt)
+	{
+		const char* mapDest = STRING(closestEnt->pev->message);
+		MESSAGE_BEGIN(MSG_ONE, gmsg_ChLvlAim, nullptr, pPlayer->edict());
+		//MESSAGE_BEGIN(MSG_BROADCAST, gmsg_ChLvlAim);
+		WRITE_STRING(mapDest && *mapDest ? mapDest : "(no dest)");
+		MESSAGE_END();
+	}
+	else
+	{
+		MESSAGE_BEGIN(MSG_ONE, gmsg_ChLvlAim, nullptr, pPlayer->edict());
+		//MESSAGE_BEGIN(MSG_BROADCAST, gmsg_ChLvlAim);
+		WRITE_STRING("");
+		MESSAGE_END();
+	}
+}
+
 void StartFrame()
 {
 	if (g_pGameRules)
@@ -1110,6 +1237,22 @@ void StartFrame()
 	if (!g_MapsToLoad.empty() && gpGlobals->time > 4)
 	{
 		LoadNextMap();
+	}
+
+	// [ap] dump map data once
+	if (!g_bDidEntityDump)
+	{
+		g_bDidEntityDump = true;
+
+		DumpMapEntityData();
+	}
+	for (int i = 1; i <= gpGlobals->maxClients; ++i)
+	{
+		CBasePlayer* pPlayer = static_cast<CBasePlayer*>(UTIL_PlayerByIndex(i));
+		if (pPlayer && pPlayer->IsAlive())
+		{
+			CheckPlayerLookingAtChangelevel(pPlayer);
+		}
 	}
 }
 
@@ -1553,7 +1696,6 @@ int AddToFullPack(struct entity_state_s* state, int e, edict_t* ent, edict_t* ho
 	}
 	// [ap] ensure entity exists
 	if (entity) state->eflags |= entity->m_EFlags;
-
 	state->scale = ent->v.scale;
 	state->solid = ent->v.solid;
 	state->colormap = ent->v.colormap;

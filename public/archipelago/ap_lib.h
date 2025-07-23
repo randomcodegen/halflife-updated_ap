@@ -11,7 +11,7 @@ typedef int64_t ap_net_id_t;
 
 // Namespace prefix for all goldsrc engine item and location ids
 #define AP_GOLD_ID_PREFIX (0x7D000000u)
-#define AP_LOCATION_MASK (0x7FFu)
+#define AP_LOCATION_MASK (0x7FFu) // TODO: Should this be 7FFFu?
 #define AP_MAX_LOCATION (AP_LOCATION_MASK)
 #define AP_GAME_ID_MASK (0x1Fu)
 #define AP_GAME_ID_SHIFT (11u)

@@ -1,5 +1,0 @@
-{"id": 1, "name": "Human_grunt", "classname": "monster_human_grunt", "uuid": 11678869386832454737},
-{"id": 2, "name": "Osprey", "classname": "monster_osprey", "uuid": 3463636997041224016},
-{"id": 3, "name": "Human_grunt", "classname": "monster_human_grunt", "uuid": 3702874290108129386},
-{"id": 4, "name": "Human_grunt", "classname": "monster_human_grunt", "uuid": 16644070675027781112},
-{"id": 5, "name": "Human_grunt", "classname": "monster_human_grunt", "uuid": 6261011611318166685},

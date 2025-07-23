@@ -1,7 +1,0 @@
-{"id": 1, "name": "Barney", "classname": "monster_barney", "uuid": 10592912208254535616},
-{"id": 2, "name": "Scientist", "classname": "monster_scientist", "uuid": 13787198562608018967},
-{"id": 3, "name": "Generic", "classname": "monster_generic", "uuid": 13186679302399256041},
-{"id": 4, "name": "Generic", "classname": "monster_generic", "uuid": 954802290347169652},
-{"id": 5, "name": "Miniturret", "classname": "monster_miniturret", "uuid": 103999427857026526},
-{"id": 6, "name": "Miniturret", "classname": "monster_miniturret", "uuid": 16353641259669414457},
-{"id": 7, "name": "Barney", "classname": "monster_barney", "uuid": 16495986344825383603},

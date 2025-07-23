@@ -1,0 +1,8 @@
+{"id": 1, "name": "Barney (1)", "classname": "monster_barney", "uuid": 10592912208254535616},
+{"id": 2, "name": "Scientist (2)", "classname": "monster_scientist", "uuid": 13787198562608018967},
+{"id": 3, "name": "Generic (3)", "classname": "monster_generic", "uuid": 13186679302399256041},
+{"id": 4, "name": "Generic (4)", "classname": "monster_generic", "uuid": 954802290347169652},
+{"id": 5, "name": "Miniturret (5)", "classname": "monster_miniturret", "uuid": 103999427857026526},
+{"id": 6, "name": "Miniturret (6)", "classname": "monster_miniturret", "uuid": 16353641259669414457},
+{"id": 7, "name": "Changelevel (7)", "classname": "trigger_changelevel", "targetname": "t0a0c", "uuid": 5783676114755357128},
+{"id": 8, "name": "Barney (8)", "classname": "monster_barney", "uuid": 16495986344825383603},

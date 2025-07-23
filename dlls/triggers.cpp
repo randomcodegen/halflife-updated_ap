@@ -1448,6 +1448,9 @@ void CChangeLevel::Spawn()
 	InitTrigger();
 	if ((pev->spawnflags & SF_CHANGELEVEL_USEONLY) == 0)
 		SetTouch(&CChangeLevel::TouchChangeLevel);
+	// [ap] expose m_szMapName
+	if (FStringNull(pev->message))
+		pev->message = ALLOC_STRING(m_szMapName);
 	//	ALERT( at_console, "TRANSITION: %s (%s)\n", m_szMapName, m_szLandmarkName );
 }
 

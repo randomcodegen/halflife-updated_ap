@@ -1,3 +1,0 @@
-{"id": 1, "name": "Human_grunt", "classname": "monster_human_grunt", "uuid": 15634119842504415498},
-{"id": 2, "name": "Human_grunt", "classname": "monster_human_grunt", "uuid": 3222660312893593377},
-{"id": 3, "name": "Crowbar", "classname": "weapon_crowbar", "uuid": 6254822477932948746},

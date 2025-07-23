@@ -61,3 +61,15 @@ private:
 	HLSPRITE m_hSprite;
 };
 extern CHudAPText g_APHud;
+
+class CHudChangelevelText : public CHudBase
+{
+public:
+	bool Init();
+	void SetText(const char* text);
+	bool Draw(float time);
+
+private:
+	char m_szText[64];
+	float m_flDisplayTime;
+};

@@ -832,6 +832,7 @@ void CScientist::PainSound()
 void CScientist::DeathSound()
 {
 	ALERT(at_notice, "Scientist %s killed.\n", STRING(this->pev->netname));
+	this->pev->colormap = 1;
 	PainSound();
 }
 

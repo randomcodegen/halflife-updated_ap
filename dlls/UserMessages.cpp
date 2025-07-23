@@ -69,4 +69,5 @@ void LinkUserMessages()
 	// [ap]
 	gmsg_MultiLineNotify = REG_USER_MSG("MLNotify", -1);
 	gmsg_TrigInfo = REG_USER_MSG("TrigInfo", -1);
+	gmsg_ChLvlAim = REG_USER_MSG("ChLvlAim", -1);
 }

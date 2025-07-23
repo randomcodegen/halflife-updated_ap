@@ -1,7 +1,0 @@
-{"id": 1, "name": "Generic", "classname": "monster_generic", "uuid": 3692563466735306090},
-{"id": 2, "name": "Generic", "classname": "monster_generic", "uuid": 7147962346713226007},
-{"id": 3, "name": "Generic", "classname": "monster_generic", "uuid": 14153821261433644231},
-{"id": 4, "name": "Generic", "classname": "monster_generic", "uuid": 1389967540229644776},
-{"id": 5, "name": "Cockroach", "classname": "monster_cockroach", "uuid": 1683837387905727161},
-{"id": 6, "name": "Cockroach", "classname": "monster_cockroach", "uuid": 4890176146747327213},
-{"id": 7, "name": "Cockroach", "classname": "monster_cockroach", "uuid": 16447010070326597018},

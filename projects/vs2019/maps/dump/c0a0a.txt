@@ -1,0 +1,3 @@
+{"id": 1, "name": "Changelevel (1)", "classname": "trigger_changelevel", "targetname": "c0a0", "uuid": 3005958153502400011},
+{"id": 2, "name": "Changelevel (2)", "classname": "trigger_changelevel", "targetname": "c0a0b", "uuid": 9376190970246520094},
+{"id": 3, "name": "Generic (3)", "classname": "monster_generic", "uuid": 3134889812706222447},

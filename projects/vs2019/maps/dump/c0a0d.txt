@@ -1,0 +1,6 @@
+{"id": 1, "name": "Gman (1)", "classname": "monster_gman", "uuid": 18200162914174389643},
+{"id": 2, "name": "Generic (2)", "classname": "monster_generic", "uuid": 1802638587225244848},
+{"id": 3, "name": "Changelevel (3)", "classname": "trigger_changelevel", "targetname": "c0a0c", "uuid": 208335063702574096},
+{"id": 4, "name": "Changelevel (4)", "classname": "trigger_changelevel", "targetname": "c0a0e", "uuid": 15549368809365831233},
+{"id": 5, "name": "Barney (5)", "classname": "monster_barney", "uuid": 6618238570133764720},
+{"id": 6, "name": "Generic (6)", "classname": "monster_generic", "uuid": 14031518528743672375},

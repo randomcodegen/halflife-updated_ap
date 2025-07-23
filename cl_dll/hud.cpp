@@ -318,7 +318,7 @@ int __MsgFunc_TrigInfo(const char* name, int size, void* buf)
 
 	g_TriggerZones.push_back(zone);
 
-	return 1;
+	return 0;
 }
 
 int __MsgFunc_MLNotify(const char* pszName, int iSize, void* pbuf)
@@ -331,10 +331,30 @@ int __MsgFunc_MLNotify(const char* pszName, int iSize, void* pbuf)
 		gHUD.m_MultiNotify->AddMessage(pszMessage);
 
 		// also print to ap console if we are debugging
-		if (_DEBUG)
-			printf(pszMessage);
+#ifdef _DEBUG
+		printf(pszMessage);
+#endif
 	}
 	
+	return 0;
+}
+
+int __MsgFunc_ChLvlAim(const char* pszName, int iSize, void* pbuf)
+{
+	BEGIN_READ(pbuf, iSize);
+	char* message = READ_STRING();
+
+	if (message && *message)
+	{
+		char displayText[256];
+		snprintf(displayText, sizeof(displayText), "to %s", message);
+		gHUD.m_ChangelevelText->SetText(displayText);
+	}
+	else
+	{
+		// Pass nullptr to clear the text
+		gHUD.m_ChangelevelText->SetText(nullptr);
+	}
 	return 0;
 }
 
@@ -380,6 +400,7 @@ void CHud::Init()
 	// [ap]
 	HOOK_MESSAGE(MLNotify);
 	HOOK_MESSAGE(TrigInfo);
+	HOOK_MESSAGE(ChLvlAim);
 
 	CVAR_CREATE("hud_classautokill", "1", FCVAR_ARCHIVE | FCVAR_USERINFO); // controls whether or not to suicide immediately on TF class switch
 	CVAR_CREATE("hud_takesshots", "0", FCVAR_ARCHIVE);					   // controls whether or not to automatically take screenshots at the end of a round
@@ -443,6 +464,8 @@ void CHud::Init()
 	m_MultiNotify->Init();
 	m_Speedometer = new CHudSpeedometer();
 	m_Speedometer->Init();
+	m_ChangelevelText = new CHudChangelevelText();
+	m_ChangelevelText->Init();
 
 	GetClientVoiceMgr()->Init(&g_VoiceStatusHelper, (vgui::Panel**)&gViewPort);
 

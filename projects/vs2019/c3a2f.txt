@@ -1,4 +1,0 @@
-{"id": 1, "name": "Scientist_dead", "classname": "monster_scientist_dead", "uuid": 737749851531779612},
-{"id": 2, "name": "Healthkit", "classname": "item_healthkit", "uuid": 17692910033951012187},
-{"id": 3, "name": "Gaussclip", "classname": "ammo_gaussclip", "uuid": 17460494128291562904},
-{"id": 4, "name": "Gaussclip", "classname": "ammo_gaussclip", "uuid": 11925512571625075585},

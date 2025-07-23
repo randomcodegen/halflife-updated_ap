@@ -1,0 +1,7 @@
+{"id": 1, "name": "Changelevel (1)", "classname": "trigger_changelevel", "targetname": "c1a4j", "uuid": 15299835391172110002},
+{"id": 2, "name": "Changelevel (2)", "classname": "trigger_changelevel", "targetname": "c1a4i", "uuid": 16724816689895125443},
+{"id": 3, "name": "Barney_dead (3)", "classname": "monster_barney_dead", "uuid": 17181312855744473328},
+{"id": 4, "name": "357 (4)", "classname": "weapon_357", "uuid": 1055111033141227288},
+{"id": 5, "name": "357 (5)", "classname": "ammo_357", "uuid": 6474058817126951513},
+{"id": 6, "name": "357 (6)", "classname": "ammo_357", "uuid": 9911825888626037839},
+{"id": 7, "name": "Scientist_dead (7)", "classname": "monster_scientist_dead", "uuid": 16126994104618422020},

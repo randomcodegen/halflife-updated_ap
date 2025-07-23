@@ -618,6 +618,7 @@ void CTalkMonster::Killed(entvars_t* pevAttacker, int iGib)
 	// Don't finish that sentence
 	StopTalking();
 	SetUse(NULL);
+	this->pev->colormap = 1;
 	CBaseMonster::Killed(pevAttacker, iGib);
 }
 
@@ -1404,7 +1405,11 @@ void CTalkMonster::FollowerUse(CBaseEntity* pActivator, CBaseEntity* pCaller, US
 	if (pCaller != NULL && pCaller->IsPlayer())
 	{
 		// [ap] can implement talksanity here, greeting all NPCs
-		ALERT(at_notice, "FollowerUse\n");
+		if (this->pev->colormap != 1) {
+			ALERT(at_notice, "FollowerUse %s\n", STRING(this->pev->netname));
+			// set feflag to identify as talked with
+			this->pev->colormap = 1;
+		}
 		// Pre-disaster followers can't be used
 		if ((pev->spawnflags & SF_MONSTER_PREDISASTER) != 0)
 		{

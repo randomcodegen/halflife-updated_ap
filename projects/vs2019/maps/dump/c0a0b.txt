@@ -1,0 +1,4 @@
+{"id": 1, "name": "Changelevel (1)", "classname": "trigger_changelevel", "targetname": "c0a0a", "uuid": 12523128633586289144},
+{"id": 2, "name": "Barney (2)", "classname": "monster_barney", "uuid": 14701507991104613147},
+{"id": 3, "name": "Scientist (3)", "classname": "monster_scientist", "uuid": 5092597197641147514},
+{"id": 4, "name": "Changelevel (4)", "classname": "trigger_changelevel", "targetname": "c0a0c", "uuid": 3797818063528137818},

@@ -1,0 +1,7 @@
+{"id": 1, "name": "Scientist (1)", "classname": "monster_scientist", "uuid": 13005695103758557903},
+{"id": 2, "name": "Scientist (2)", "classname": "monster_scientist", "uuid": 10615995044244627191},
+{"id": 3, "name": "Changelevel (3)", "classname": "trigger_changelevel", "targetname": "c1a0d", "uuid": 15639101752142047228},
+{"id": 4, "name": "Scientist (4)", "classname": "monster_scientist", "uuid": 9641165332588524161},
+{"id": 5, "name": "Scientist (5)", "classname": "monster_scientist", "uuid": 13387546992549979718},
+{"id": 6, "name": "Barney (6)", "classname": "monster_barney", "uuid": 3368076397790648277},
+{"id": 7, "name": "Changelevel (7)", "classname": "trigger_changelevel", "targetname": "c1a0b", "uuid": 10420522592277713579},

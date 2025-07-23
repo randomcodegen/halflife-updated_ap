@@ -1,0 +1,7 @@
+{"id": 1, "name": "Changelevel (1)", "classname": "trigger_changelevel", "targetname": "c4a2", "uuid": 6331835355171552102},
+{"id": 2, "name": "Hevsuit_dead (2)", "classname": "monster_hevsuit_dead", "uuid": 14939369366300322929},
+{"id": 3, "name": "Healthkit (3)", "classname": "item_healthkit", "uuid": 6699762797186933131},
+{"id": 4, "name": "Hevsuit_dead (4)", "classname": "monster_hevsuit_dead", "uuid": 15222361493812445903},
+{"id": 5, "name": "Changelevel (5)", "classname": "trigger_changelevel", "targetname": "c3a2d", "uuid": 4951744276599853209},
+{"id": 6, "name": "Battery (6)", "classname": "item_battery", "uuid": 13966721331223998143},
+{"id": 7, "name": "Healthkit (7)", "classname": "item_healthkit", "uuid": 5658750237245693989},

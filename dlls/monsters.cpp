@@ -2683,7 +2683,10 @@ void CBaseMonster::HandleAnimEvent(MonsterEvent_t* pEvent)
 			// Kill me now! (and fade out when CineCleanup() is called)
 			// [ap] cutscene killsanity
 			if (!strcmp(STRING(pev->classname), "monster_scientist"))
+			{
 				ALERT(at_notice, "Scientist %s killed.\n", STRING(this->pev->netname));
+				this->pev->colormap = 1;
+			}
 #if _DEBUG
 			ALERT(at_aiconsole, "Death event: %s\n", STRING(pev->classname));
 #endif

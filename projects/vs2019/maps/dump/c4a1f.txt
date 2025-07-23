@@ -1,0 +1,2 @@
+{"id": 1, "name": "Changelevel (1)", "classname": "trigger_changelevel", "targetname": "c4a1e", "uuid": 13053300567983967686},
+{"id": 2, "name": "Changelevel (2)", "classname": "trigger_changelevel", "targetname": "c4a3", "uuid": 8738021036392985700},

@@ -282,6 +282,16 @@ void DLLEXPORT HUD_DrawTransparentTriangles()
 			DrawBoundingBoxGL(zone.origin, zone.mins, zone.maxs, 1.0f, 0.0f, 1.0f, 0.5f);
 		}
 	}
+	else {
+		// make sure to always draw changelevel triggers
+		for (const auto& zone : g_TriggerZones)
+		{
+			if (zone.classname == "trigger_changelevel")
+			{
+				DrawBoundingBoxGL(zone.origin, zone.mins, zone.maxs, 1.0f, 0.0f, 1.0f, 0.5f);
+			}
+		}
+	}
 
 	// then we print sequence numbers of entities
 	int lookedAt = GetLookedAtEntity();
@@ -355,13 +365,15 @@ void DLLEXPORT HUD_DrawTransparentTriangles()
 			if (!ent->player && ent->curstate.messagenum != gEngfuncs.GetLocalPlayer()->curstate.messagenum)
 				continue;
 			int sequ = ent->curstate.sequence;
+			
 			bool isDeadScientistSequ = ((sequ >= 31 && sequ <= 42) || sequ == 84 || sequ == 115);
 			bool isSittingScientistSequ = ((sequ >= 71 && sequ <= 75) || sequ == 78);
-			bool DrawScientist = !(isDeadScientistSequ || isSittingScientistSequ);
+			bool DrawScientist = !(ent->curstate.colormap & 1) && !(isDeadScientistSequ || isSittingScientistSequ);
 
 			bool isDeadBarneySequ = ((sequ >= 25 && sequ <= 38) || (sequ >= 55 && sequ <= 59));
 			bool isSittingBarneySequ = (sequ == 54);
-			bool DrawBarney = !(isDeadBarneySequ || isSittingBarneySequ);
+			bool DrawBarney = !(ent->curstate.colormap & 1) && !(isDeadBarneySequ || isSittingBarneySequ);
+
 			// Only draw on ap models
 			if (strstr(modelName, "models/ap-logo.mdl"))
 				DrawBoundingBoxEntGL(ent, 1.0f, 1.0f, 0.0f, 1.0f);

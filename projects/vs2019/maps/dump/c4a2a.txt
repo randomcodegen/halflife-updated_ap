@@ -1,0 +1,5 @@
+{"id": 1, "name": "Changelevel (1)", "classname": "trigger_changelevel", "targetname": "c4a2", "uuid": 18392235081871329637},
+{"id": 2, "name": "Changelevel (2)", "classname": "trigger_changelevel", "targetname": "c4a2b", "uuid": 6607905529232717418},
+{"id": 3, "name": "Hevsuit_dead (3)", "classname": "monster_hevsuit_dead", "uuid": 15094654252736317490},
+{"id": 4, "name": "Battery (4)", "classname": "item_battery", "uuid": 17724384116336057790},
+{"id": 5, "name": "Battery (5)", "classname": "item_battery", "uuid": 8210714841753512653},

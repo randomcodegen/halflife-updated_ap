@@ -1,0 +1,7 @@
+{"id": 1, "name": "Changelevel (1)", "classname": "trigger_changelevel", "targetname": "c1a3c", "uuid": 7794600072859973630},
+{"id": 2, "name": "Human_grunt (2)", "classname": "monster_human_grunt", "uuid": 11678869386832454737},
+{"id": 3, "name": "Changelevel (3)", "classname": "trigger_changelevel", "targetname": "c1a3a", "uuid": 9420218501308001688},
+{"id": 4, "name": "Osprey (4)", "classname": "monster_osprey", "uuid": 3463636997041224016},
+{"id": 5, "name": "Human_grunt (5)", "classname": "monster_human_grunt", "uuid": 3702874290108129386},
+{"id": 6, "name": "Human_grunt (6)", "classname": "monster_human_grunt", "uuid": 16644070675027781112},
+{"id": 7, "name": "Human_grunt (7)", "classname": "monster_human_grunt", "uuid": 6261011611318166685},

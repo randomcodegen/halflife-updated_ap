@@ -179,6 +179,12 @@ int DispatchSpawn(edict_t* pent)
 				std::string hash_str = generate_hash(pEntity->pev->absmax[0], pEntity->pev->absmax[1], pEntity->pev->absmax[2], STRING(pEntity->pev->classname));
 				pEntity->pev->netname = ALLOC_STRING(hash_str.c_str());
 			}
+			// and trigger_changlevel
+			if (!strcmp(classname, "trigger_changelevel"))
+			{
+				std::string hash_str = generate_hash(pEntity->pev->absmax[0], pEntity->pev->absmax[1], pEntity->pev->absmax[2], STRING(pEntity->pev->classname));
+				pEntity->pev->netname = ALLOC_STRING(hash_str.c_str());
+			}
 			// replace models here
 			if (!strncmp(classname, "item", 4) || !strncmp(classname, "ammo", 4) || !strncmp(classname, "weapon", 6))
 			{

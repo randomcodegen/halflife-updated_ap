@@ -1,0 +1,5 @@
+{"id": 1, "name": "Changelevel (1)", "classname": "trigger_changelevel", "targetname": "c1a3", "uuid": 5817498169926495992},
+{"id": 2, "name": "Changelevel (2)", "classname": "trigger_changelevel", "targetname": "c1a3b", "uuid": 2611888488128155111},
+{"id": 3, "name": "Human_grunt (3)", "classname": "monster_human_grunt", "uuid": 18104790240237638141},
+{"id": 4, "name": "Human_grunt (4)", "classname": "monster_human_grunt", "uuid": 2639948514126213190},
+{"id": 5, "name": "Osprey (5)", "classname": "monster_osprey", "uuid": 2161145182702253227},
